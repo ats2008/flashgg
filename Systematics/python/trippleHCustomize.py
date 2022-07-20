@@ -10,38 +10,11 @@ class TrippleHCustomize():
         self.process = process
         self.customize = customize
         self.metaConditions = metaConditions
-        if customize.addVBFTrippleHTag:
-            self.tagList = [ ["VBFTrippleHTag",2], ["TrippleHTag",12] ]
-        else:
-            self.tagList = [ ["TrippleHTag",12] ]
+        self.tagList = [ ["TrippleHTag",12] ]
         self.customizeTagSequence()
 
     def vbfHHVariables(self):
         variables = [ 
-            "VBFDeltaR_jg := getVBFDeltaR_jg()",
-            "VBFDeltaR_jb := getVBFDeltaR_jb()",
-            "VBFJet_mjj := getVBFJet_mjj()",
-            "VBFCentrality_jg := getVBFCentrality_jg",
-            "VBFCentrality_jb := getVBFCentrality_jb",
-            "VBFProd_eta := getVBFProd_eta",
-            "VBFDelta_phi := getVBFDelta_phi", 
-            "VBFJet_Delta_eta := getVBFJet_Delta_eta()",
-            "VBFleadJet_pt :=  getVBFleadJet_pt() ",
-            "VBFsubleadJet_pt := getVBFsubleadJet_pt() ",
-            "VBFleadJet_eta := getVBFleadJet_eta()",
-            "VBFsubleadJet_eta := getVBFsubleadJet_eta()",
-            "VBFleadJet_phi := getVBFleadJet_phi()",
-            "VBFsubleadJet_phi := getVBFsubleadJet_phi()",
-            "VBFleadJet_pz := getVBFleadJet_pz()",
-            "VBFsubleadJet_pz := getVBFsubleadJet_pz()",
-            "VBFleadJet_QGL := getVBFleadJet_QGL() ",
-            "VBFleadJet_PUID := getVBFleadJet_PUID()",
-            "VBFsubleadJet_QGL := getVBFsubleadJet_QGL()",
-            "VBFsubleadJet_PUID := getVBFsubleadJet_PUID()",
-            "VBF_angleHH := getVBF_angleHH()",
-            "VBF_dRHH := getVBF_dRHH()",
-            "VBF_etaHH := getVBF_etaHH()",
-            "diVBFjet_pt := getdiVBFjet_pt()"
         ]
 
         return variables
@@ -194,7 +167,7 @@ class TrippleHCustomize():
             ]
     
     
-        if self.customize.doTrippleHttHKiller : 
+        if self.customize.doDoubleHttHKiller : 
              variables +=[
                "ttHScore := ttHScore()",
              ]
@@ -217,7 +190,7 @@ class TrippleHCustomize():
          systematicVariables+= ["benchmark_reweight_SM[100,0,200] := getBenchmarkReweight(12)"]
          systematicVariables+= ["benchmark_reweight_box[100,0,200] := getBenchmarkReweight(13)"]
 
-      if self.customize.doTrippleHttHKiller : 
+      if self.customize.doDoubleHttHKiller : 
              systematicVariables +=["ttHScore[100,0,1.]:=ttHScore()"]
 
       return systematicVariables
@@ -259,42 +232,17 @@ class TrippleHCustomize():
         # customizing training file (with/wo Mjj) 
         training_type = 'with_Mjj' if self.customize.doubleHTagsUseMjj else 'wo_Mjj'
 
-        #self.process.flashggVBFTrippleHTag.MVAConfig.weights=cms.FileInPath(str(self.metaConditions["VBFdoubleHTag"]["weightsFile"][training_type]))
-        #self.process.flashggVBFTrippleHTag.MVAFlatteningFileName = cms.untracked.FileInPath(str(self.metaConditions["VBFdoubleHTag"]["MVAFlatteningFileName"][training_type]))
-        self.process.flashggVBFTrippleHTag.MVAConfigCAT0.weights=cms.FileInPath(str(self.metaConditions["VBFdoubleHTag"]["weightsFileCAT0"][training_type]))
-        self.process.flashggVBFTrippleHTag.MVAFlatteningFileNameCAT0 = cms.untracked.FileInPath(str(self.metaConditions["VBFdoubleHTag"]["MVAFlatteningFileNameCAT0"][training_type]))
-        self.process.flashggVBFTrippleHTag.MVAConfigCAT1.weights=cms.FileInPath(str(self.metaConditions["VBFdoubleHTag"]["weightsFileCAT1"][training_type]))
-        self.process.flashggVBFTrippleHTag.MVAFlatteningFileNameCAT1 = cms.untracked.FileInPath(str(self.metaConditions["VBFdoubleHTag"]["MVAFlatteningFileNameCAT1"][training_type]))
 
 
         if training_type == 'with_Mjj' :
-            self.process.flashggVBFTrippleHTag.MVABoundaries = cms.vdouble(0.95)
-            self.process.flashggVBFTrippleHTag.ttHScoreThreshold = cms.double(0)
+            pass
         elif training_type == 'wo_Mjj' :
-            #self.process.flashggVBFTrippleHTag.MVAConfig.variables.pop(0)
-            #self.process.flashggVBFTrippleHTag.MVABoundaries = cms.vdouble(0.70)
-            #self.process.flashggVBFTrippleHTag.ttHScoreThreshold = cms.double(0.26)
-            self.process.flashggVBFTrippleHTag.MVAConfigCAT0.variables.pop(0)
-            self.process.flashggVBFTrippleHTag.MVAConfigCAT1.variables.pop(0)
-            self.process.flashggVBFTrippleHTag.MVABoundaries = cms.vdouble(0.52,0.86) #CAT0 MX > 500, CAT1 :MX <=500
-            self.process.flashggVBFTrippleHTag.MXBoundaries = cms.vdouble(0.,500.)
-            self.process.flashggVBFTrippleHTag.nMX = cms.uint32(2)
-            self.process.flashggVBFTrippleHTag.ttHScoreThreshold = cms.double(0.26)
-
+            pass
         ## customize meta conditions
-        self.process.flashggVBFTrippleHTag.JetIDLevel=cms.string(str(self.metaConditions["VBFdoubleHTag"]["jetID"]))
-        self.process.flashggVBFTrippleHTag.MVAscaling = cms.double(self.metaConditions["VBFdoubleHTag"]["MVAscalingValue"])
-        self.process.flashggVBFTrippleHTag.dottHTagger = cms.bool(self.customize.doTrippleHttHKiller)
-        self.process.flashggVBFTrippleHTag.ttHWeightfile = cms.untracked.FileInPath(str(self.metaConditions["VBFdoubleHTag"]["ttHWeightfile"]))
-        self.process.flashggVBFTrippleHTag.ttHKiller_mean = cms.vdouble(self.metaConditions["VBFdoubleHTag"]["ttHKiller_mean"])
-        self.process.flashggVBFTrippleHTag.ttHKiller_std = cms.vdouble(self.metaConditions["VBFdoubleHTag"]["ttHKiller_std"])
-        self.process.flashggVBFTrippleHTag.ttHKiller_listmean = cms.vdouble(self.metaConditions["VBFdoubleHTag"]["ttHKiller_listmean"])
-        self.process.flashggVBFTrippleHTag.ttHKiller_liststd = cms.vdouble(self.metaConditions["VBFdoubleHTag"]["ttHKiller_liststd"])
-        self.process.flashggVBFTrippleHTag.MaxJetEta = cms.double(self.metaConditions["bTagSystematics"]["eta"])
 
         self.process.flashggTrippleHTag.JetIDLevel=cms.string(str(self.metaConditions["doubleHTag"]["jetID"]))
         self.process.flashggTrippleHTag.MVAscaling = cms.double(self.metaConditions["doubleHTag"]["MVAscalingValue"])
-        self.process.flashggTrippleHTag.dottHTagger = cms.bool(self.customize.doTrippleHttHKiller)
+        self.process.flashggTrippleHTag.dottHTagger = cms.bool(self.customize.doDoubleHttHKiller)
         self.process.flashggTrippleHTag.ttHWeightfile = cms.untracked.FileInPath(str(self.metaConditions["doubleHTag"]["ttHWeightfile"]))
         self.process.flashggTrippleHTag.ttHKiller_mean = cms.vdouble(self.metaConditions["doubleHTag"]["ttHKiller_mean"])
         self.process.flashggTrippleHTag.ttHKiller_std = cms.vdouble(self.metaConditions["doubleHTag"]["ttHKiller_std"])
@@ -307,7 +255,6 @@ class TrippleHCustomize():
 
         ## remove single Higgs tags
         if self.customize.doubleHTagsOnly:
-            self.process.flashggTagSequence.remove(self.process.flashggVBFTag)
             self.process.flashggTagSequence.remove(self.process.flashggTTHLeptonicTag)
             self.process.flashggTagSequence.remove(self.process.flashggTTHHadronicTag)
             self.process.flashggTagSequence.remove(self.process.flashggVHEtTag)
@@ -318,9 +265,7 @@ class TrippleHCustomize():
             self.process.flashggTagSequence.remove(self.process.flashggZHLeptonicTag)
             self.process.flashggTagSequence.remove(self.process.flashggVHLeptonicLooseTag)
             self.process.flashggTagSequence.remove(self.process.flashggVHHadronicTag)
-            self.process.flashggTagSequence.remove(self.process.flashggVBFMVA)
             self.process.flashggTagSequence.remove(self.process.flashggVHhadMVA)
-            self.process.flashggTagSequence.remove(self.process.flashggVBFDiPhoDiJetMVA)
             self.process.flashggTagSequence.remove(self.process.flashggTTHDiLeptonTag)
             self.process.flashggTagSequence.remove(self.process.flashggUntagged)
             self.process.flashggTagSequence.remove(self.process.flashggUntagged)
@@ -328,13 +273,10 @@ class TrippleHCustomize():
  
     def doubleHTagMerger(self,systlabels=[]):
         '''
-        Construct the actual tag sequence for the HH analysis. Taking care of adding/removing the VBFHH tag and setting up the
         merging step taking into account that different syst variations are produced by the same producer in the case of the HH tags
         '''
 
         self.process.p.remove(self.process.flashggTagSorter) 
-        if not self.customize.addVBFTrippleHTag:
-            self.process.flashggTrippleHTagSequence.remove(self.process.flashggVBFTrippleHTag)
 
         self.process.p.replace(self.process.flashggSystTagMerger,self.process.flashggTrippleHTagSequence*self.process.flashggTagSorter*self.process.flashggSystTagMerger)
 
@@ -342,24 +284,17 @@ class TrippleHCustomize():
             if systlabel!='':
                 self.process.p.remove(getattr(self.process,'flashggTagSorter'+systlabel))
                 self.process.p.replace(self.process.flashggSystTagMerger,getattr(self.process, 'flashggTagSorter'+systlabel)*self.process.flashggSystTagMerger)            
-            ###---Tag priority list: VBFHH goes before ggHH
-            if self.customize.addVBFTrippleHTag:
-                setattr(getattr(self.process, 'flashggTagSorter'+systlabel), 'TagPriorityRanges', cms.VPSet( cms.PSet(TagName = cms.InputTag('flashggVBFTrippleHTag', systlabel)), cms.PSet(TagName = cms.InputTag('flashggTrippleHTag', systlabel)) ))
             else:
                 setattr(getattr(self.process, 'flashggTagSorter'+systlabel), 'TagPriorityRanges', cms.VPSet( cms.PSet(TagName = cms.InputTag('flashggTrippleHTag', systlabel))))
                  
 
-    def doubleHTagRunSequence(self,systlabels,jetsystlabels,phosystlabels):
+    def trippleHTagRunSequence(self,systlabels,jetsystlabels,phosystlabels):
         if self.customize.doubleHTagsOnly: 
             self.doubleHTagMerger(systlabels)
 
         if len(systlabels)>1 :
             getattr(self.process, "flashggTrippleHTag").JetsSuffixes = cms.vstring([systlabels[0]]+jetsystlabels)
             getattr(self.process, "flashggTrippleHTag").DiPhotonSuffixes = cms.vstring([systlabels[0]]+phosystlabels)
-            if self.customize.addVBFTrippleHTag:
-               getattr(self.process, "flashggVBFTrippleHTag").JetsSuffixes = cms.vstring([systlabels[0]]+jetsystlabels)
-               getattr(self.process, "flashggVBFTrippleHTag").DiPhotonSuffixes = cms.vstring([systlabels[0]]+phosystlabels)
-               getattr(self.process, "flashggVBFTrippleHTag").VBFJetsSuffixes = cms.vstring([systlabels[0]]+jetsystlabels)
 
         if self.customize.doubleHReweight>0:
             self.addNodesReweighting()
@@ -371,11 +306,11 @@ class TrippleHCustomize():
 
     def addNodesReweighting(self):
         if self.customize.doubleHReweight > 0 :
-            from flashgg.Taggers.flashggTrippleHReweight_cfi import flashggTrippleHReweight
-            self.process.flashggTrippleHReweight = flashggTrippleHReweight
-            self.process.flashggTrippleHReweight.doReweight = self.customize.doubleHReweight
-            self.process.flashggTrippleHReweight.weightsFile = cms.untracked.FileInPath(str(self.metaConditions["doubleHTag"]["NodesReweightingFileName"]))
-            self.process.p.replace(self.process.flashggTrippleHTagSequence, self.process.flashggTrippleHReweight*self.process.flashggTrippleHTagSequence)
+            from flashgg.Taggers.flashggDoubleHReweight_cfi import flashggDoubleHReweight
+            self.process.flashggDoubleHReweight = flashggDoubleHReweight
+            self.process.flashggDoubleHReweight.doReweight = self.customize.doubleHReweight
+            self.process.flashggDoubleHReweight.weightsFile = cms.untracked.FileInPath(str(self.metaConditions["doubleHTag"]["NodesReweightingFileName"]))
+            self.process.p.replace(self.process.flashggDoubleHTagSequence, self.process.flashggDoubleHReweight*self.process.flashggDoubleHTagSequence)
 
     def addGenAnalysis(self):
         if self.customize.processId == "Data": 

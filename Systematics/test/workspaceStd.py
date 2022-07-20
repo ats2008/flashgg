@@ -43,7 +43,7 @@ customize.options.register('doubleHTagsOnly',
                            'doubleHTagsOnly'
                            )
 customize.options.register('addVBFDoubleHTag',
-                           True,
+                           False,
                            VarParsing.VarParsing.multiplicity.singleton,
                            VarParsing.VarParsing.varType.bool,
                            'addVBFDoubleHTag'
@@ -91,7 +91,7 @@ customize.options.register('doDoubleHTag',
                            'doDoubleHTag'
                            )
 customize.options.register('doTrippleHTag',
-                           False,
+                           True,
                            VarParsing.VarParsing.multiplicity.singleton,
                            VarParsing.VarParsing.varType.bool,
                            'doTrippleHTag'
@@ -108,6 +108,13 @@ customize.options.register('ttHKillerSaveInputVariables',
                            VarParsing.VarParsing.varType.bool,
                            'ttHKillerSaveInputVariables'
                            )
+customize.options.register('doTrippleHGenAnalysis',
+                           False,
+                           VarParsing.VarParsing.multiplicity.singleton,
+                           VarParsing.VarParsing.varType.bool,
+                           'doTrippleHGenAnalysis'
+                           )
+
 customize.options.register('doDoubleHGenAnalysis',
                            False,
                            VarParsing.VarParsing.multiplicity.singleton,
@@ -139,7 +146,7 @@ customize.options.register('acceptance',
                            'acceptance'
                            )
 customize.options.register('doSystematics',
-                           True,
+                           False,
                            VarParsing.VarParsing.multiplicity.singleton,
                            VarParsing.VarParsing.varType.bool,
                            'doSystematics'
@@ -163,7 +170,7 @@ customize.options.register('ignoreNegR9',
                            'ignoreNegR9'
                            )
 customize.options.register('dumpTrees',
-                           False,
+                           True,
                            VarParsing.VarParsing.multiplicity.singleton,
                            VarParsing.VarParsing.varType.bool,
                            'dumpTrees'
@@ -270,7 +277,7 @@ if customize.doDoubleHTag:
 
 if customize.doTrippleHTag:
     import flashgg.Systematics.trippleHCustomize 
-    hhc = flashgg.Systematics.trippleHCustomize.DoubleHCustomize(process, customize, customize.metaConditions)
+    hhc = flashgg.Systematics.trippleHCustomize.TrippleHCustomize(process, customize, customize.metaConditions)
     minimalVariables += hhc.variablesToDump()
     systematicVariables = hhc.systematicVariables()
 
@@ -437,7 +444,7 @@ process.source = cms.Source ("PoolSource",
                                  #"/store/user/spigazzi/flashgg/Era2016_RR-17Jul2018_v2/legacyRun2FullV1/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/Era2016_RR-17Jul2018_v2-legacyRun2FullV1-v0-RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/190708_140500/0000/myMicroAODOutputFile_12.root"
                                  #"/store/user/spigazzi/flashgg/Era2017_RR-31Mar2018_v2/legacyRun2FullV1/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/Era2017_RR-31Mar2018_v2-legacyRun2FullV1-v0-RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190703_101705/0000/myMicroAODOutputFile_45.root"
                                  #"/store/user/spigazzi/flashgg/Era2018_RR-17Sep2018_v2/legacyRun2FullV2/GluGluHToGG_M125_TuneCP5_13TeV-amcatnloFXFX-pythia8/Era2018_RR-17Sep2018_v2-legacyRun2FullV2-v0-RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190710_093150/0000/myMicroAODOutputFile_41.root"
-                                 "/store/user/spigazzi/flashgg/Era2018_RR-17Sep2018_v2/legacyRun2FullV2/EGamma/Era2018_RR-17Sep2018_v2-legacyRun2FullV2-v0-Run2018A-17Sep2018-v2/190610_103420/0001/myMicroAODOutputFile_1125.root"
+                                 "file:/grid_mnt/t3storage3/athachay/trippleHiggs/hhhTo4b2g/flashgg/CMSSW_10_6_29/MicroAODProduction/results/mc/v1p3/c3_1_c4_1_HHHto4b2gamma_FS/c3_1_c4_1_FS_0.root"
                              ))
 
 process.TFileService = cms.Service("TFileService",
