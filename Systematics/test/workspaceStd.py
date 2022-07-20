@@ -90,6 +90,12 @@ customize.options.register('doDoubleHTag',
                            VarParsing.VarParsing.varType.bool,
                            'doDoubleHTag'
                            )
+customize.options.register('doTrippleHTag',
+                           False,
+                           VarParsing.VarParsing.multiplicity.singleton,
+                           VarParsing.VarParsing.varType.bool,
+                           'doTrippleHTag'
+                           )
 customize.options.register('doDoubleHttHKiller',
                            False,
                            VarParsing.VarParsing.multiplicity.singleton,
@@ -262,6 +268,13 @@ if customize.doDoubleHTag:
     minimalVariables += hhc.variablesToDump()
     systematicVariables = hhc.systematicVariables()
 
+if customize.doTrippleHTag:
+    import flashgg.Systematics.trippleHCustomize 
+    hhc = flashgg.Systematics.trippleHCustomize.DoubleHCustomize(process, customize, customize.metaConditions)
+    minimalVariables += hhc.variablesToDump()
+    systematicVariables = hhc.systematicVariables()
+
+
 if customize.doStageOne:
     assert (not customize.doHTXS)
     from flashgg.Systematics.stageOneCustomize import StageOneCustomize
@@ -389,6 +402,9 @@ if customize.doubleHTagsOnly:
    #     variablesToUse = minimalNonSignalVariables
   
 if customize.doDoubleHTag:
+   systlabels,jetsystlabels,metsystlabels = hhc.customizeSystematics(systlabels,jetsystlabels,metsystlabels)
+
+if customize.doTrippleHTag:
    systlabels,jetsystlabels,metsystlabels = hhc.customizeSystematics(systlabels,jetsystlabels,metsystlabels)
            
 
@@ -670,7 +686,9 @@ if customize.doDoubleHTag:
     process.p.remove(process.flashggMetFilters)
     hhc.doubleHTagRunSequence(systlabels,jetsystlabels,phosystlabels)
   
-
+if customize.doTrippleHTag:
+    process.p.remove(process.flashggMetFilters)
+    hhc.trippleHTagRunSequence(systlabels,jetsystlabels,phosystlabels)
 
 if( not hasattr(process,"options") ): process.options = cms.untracked.PSet()
 process.options.allowUnscheduled = cms.untracked.bool(True)
