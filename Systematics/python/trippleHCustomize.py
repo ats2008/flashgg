@@ -22,7 +22,7 @@ class TrippleHCustomize():
     def variablesToDump(self):
         var_workspace = []
         variables = []
-        if(self.customize.doubleHTagsOnly):
+        if(self.customize.trippleHTagsOnly):
             var_workspace += [
                 "Mjj := dijet().M()",
                 "eventNumber := eventNumber()",
@@ -112,7 +112,7 @@ class TrippleHCustomize():
                 "nMuons2018 := nMuons2018()",
                 "nElectrons2018 := nElectrons2018()"
             ]
-        if self.customize.doBJetRegression and self.customize.doubleHTagsOnly: variables +=[
+        if self.customize.doBJetRegression and self.customize.trippleHTagsOnly: variables +=[
                 "leadingJet_bRegNNCorr := leadJet().userFloat('bRegNNCorr')",
                 "leadingJet_bRegNNResolution := leadJet().userFloat('bRegNNResolution')",
                 "subleadingJet_bRegNNCorr := subleadJet().userFloat('bRegNNCorr')",
@@ -254,7 +254,7 @@ class TrippleHCustomize():
         #  self.process.flashggTagSequence.replace(self.process.flashggUntagged,(self.process.flashggTrippleHTag+self.process.flashggUntagged))
 
         ## remove single Higgs tags
-        if self.customize.doubleHTagsOnly:
+        if self.customize.trippleHTagsOnly:
             self.process.flashggTagSequence.remove(self.process.flashggTTHLeptonicTag)
             self.process.flashggTagSequence.remove(self.process.flashggTTHHadronicTag)
             self.process.flashggTagSequence.remove(self.process.flashggVHEtTag)
@@ -289,7 +289,7 @@ class TrippleHCustomize():
                  
 
     def trippleHTagRunSequence(self,systlabels,jetsystlabels,phosystlabels):
-        if self.customize.doubleHTagsOnly: 
+        if self.customize.trippleHTagsOnly: 
             self.doubleHTagMerger(systlabels)
 
         if len(systlabels)>1 :

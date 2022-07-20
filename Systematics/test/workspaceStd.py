@@ -42,6 +42,12 @@ customize.options.register('doubleHTagsOnly',
                            VarParsing.VarParsing.varType.bool,
                            'doubleHTagsOnly'
                            )
+customize.options.register('trippleHTagsOnly',
+                           True,
+                           VarParsing.VarParsing.multiplicity.singleton,
+                           VarParsing.VarParsing.varType.bool,
+                           'trippleHTagsOnly'
+                           )
 customize.options.register('addVBFDoubleHTag',
                            False,
                            VarParsing.VarParsing.multiplicity.singleton,
@@ -77,6 +83,12 @@ customize.options.register('dumpGenWeight',
                            VarParsing.VarParsing.multiplicity.singleton,
                            VarParsing.VarParsing.varType.bool,
                            'dumpGenWeight'
+                           )
+customize.options.register('trippleHReweight',
+                           -1,
+                           VarParsing.VarParsing.multiplicity.singleton,
+                           VarParsing.VarParsing.varType.int,
+                           'trippleHReweight'
                            )
 customize.options.register('doubleHReweight',
                            -1,
@@ -404,6 +416,11 @@ else:
     customizeSystematicsForBackground(process)
 
 if customize.doubleHTagsOnly:
+    variablesToUse = minimalVariables
+   # if customize.processId == "Data":
+   #     variablesToUse = minimalNonSignalVariables
+  
+if customize.trippleHTagsOnly:
     variablesToUse = minimalVariables
    # if customize.processId == "Data":
    #     variablesToUse = minimalNonSignalVariables
