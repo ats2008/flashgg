@@ -64,10 +64,11 @@ namespace flashgg {
         float HelicityCosTheta( TLorentzVector Booster, TLorentzVector Boosted) const;
         float getPhoJetMinDr() const;
         float getPhoJetOtherDr() const;
+        float getSigmaM1OverMJets() const;
+        float getSigmaM2OverMJets() const;
         float getSigmaMDecorr() const;
-        float getSigmaMOverMJets() const;
         void  setSigmaMDecorrTransf( DecorrTransform* transfEBEB, DecorrTransform* transfNotEBEB){ transfEBEB_= transfEBEB; transfNotEBEB_=transfNotEBEB;}
-        LorentzVector getdiHiggsP4() const {return p4();}
+        LorentzVector getTriHiggsP4() const {return p4();}
         void setBenchmarkReweight(std::vector<float> x) { benchmark_reweights_ = x; }
         float getBenchmarkReweight(int targetNode) const { return benchmark_reweights_[targetNode]; }
         void setEventNumber(double x) { eventNumber_ = x; }

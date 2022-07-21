@@ -169,15 +169,22 @@ float TrippleHTag::getSigmaMDecorr() const
     return sigmaMOverMDecorr;
 }
 
-float TrippleHTag::getSigmaMOverMJets() const
+float TrippleHTag::getSigmaM1OverMJets() const
 {
-    float dijetSigmaMOverM = 1./pow(dijet().M(),2)*sqrt(
-                                                        pow(leadJet().userFloat("bRegNNResolution"),2)*pow(pow(leadJet().p4().M(),2) + leadJet().p4().Dot(subleadJet().p4()) ,2)  + 
-                                                        pow(subleadJet().userFloat("bRegNNResolution"),2)*pow( pow(subleadJet().p4().M(),2) + subleadJet().p4().Dot(leadJet().p4()),2) 
-                                                        );                                     
-
+    float dijetSigmaMOverM = 1./pow(dijet1().M(),2)*sqrt(
+                                         pow(h1LeadJet().userFloat("bRegNNResolution"),2)*pow(pow(h1LeadJet().p4().M(),2) + h1LeadJet().p4().Dot(h1SubleadJet().p4()) ,2)  + 
+                                         pow(h1SubleadJet().userFloat("bRegNNResolution"),2)*pow( pow(h1SubleadJet().p4().M(),2) + h1SubleadJet().p4().Dot(h1LeadJet().p4()),2) 
+                                                     );                                     
     return dijetSigmaMOverM;
+}
 
+float TrippleHTag::getSigmaM2OverMJets() const
+{
+    float dijetSigmaMOverM = 1./pow(dijet2().M(),2)*sqrt(
+                                         pow(h2LeadJet().userFloat("bRegNNResolution"),2)*pow(pow(h2LeadJet().p4().M(),2) + h2LeadJet().p4().Dot(h2SubleadJet().p4()) ,2)  + 
+                                         pow(h2SubleadJet().userFloat("bRegNNResolution"),2)*pow( pow(h2SubleadJet().p4().M(),2) + h2SubleadJet().p4().Dot(h2LeadJet().p4()),2) 
+                                                     );                                     
+    return dijetSigmaMOverM;
 }
 
 // Local Variables:

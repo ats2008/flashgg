@@ -272,12 +272,6 @@ TrippleHTagProducer::TrippleHTagProducer( const ParameterSet &iConfig ) :
         useElecLooseId = iConfig.getParameter<bool>("useElectronLooseID");
         elecEtaThresholds = iConfig.getParameter<std::vector<double > >("electronEtaThresholds");
 
-        //needed for ttH killer
-        //METToken_= consumes<View<flashgg::Met> >( iConfig.getParameter<InputTag> ("METTag") ) ;
-        //electronToken_ = consumes<edm::View<flashgg::Electron> >( iConfig.getParameter<edm::InputTag> ("ElectronTag") );
-        //muonToken_ = consumes<edm::View<flashgg::Muon> >( iConfig.getParameter<edm::InputTag>("MuonTag") );
-        //vertexToken_ = consumes<edm::View<reco::Vertex> >( iConfig.getParameter<edm::InputTag> ("VertexTag") );
-        //rhoToken_ = consumes<double>( iConfig.getParameter<edm::InputTag>( "rhoTag" ) );
 
         ttHWeightfileName_ = iConfig.getUntrackedParameter<FileInPath>("ttHWeightfile");
         ttHScoreThreshold = iConfig.getParameter<double>("ttHScoreThreshold");
@@ -391,6 +385,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 selHiggses.push_back(genPar);
             }
         }
+
         if (selHiggses.size()==3) {  // TODO : add the third H
             TLorentzVector H1,H2;
             H1.SetPtEtaPhiE(selHiggses[0]->p4().pt(),selHiggses[0]->p4().eta(),selHiggses[0]->p4().phi(),selHiggses[0]->p4().energy());
@@ -400,9 +395,8 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
         }
         truths->push_back( truth_obj );
     }
-    std::cout << "strating the photon loop " << std::endl; 
     // read diphotons
-    for (unsigned int diphoton_idx = 0; diphoton_idx < diPhotonTokens_.size(); diphoton_idx++) {//looping over all diphoton systematics
+    for (unsigned int diphoton_idx = 0; diphoton_idx < diPhotonTokens_.size(); diphoton_idx++) { //looping over all diphoton systematics
         
         Handle<View<flashgg::DiPhotonCandidate> > diPhotons;
         evt.getByToken( diPhotonTokens_[diphoton_idx], diPhotons );
@@ -410,7 +404,6 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
         unsigned int loopOverJets = 1;
         
         if (inputDiPhotonSuffixes_[diphoton_idx].empty()) loopOverJets = inputJetsSuffixes_.size();
-        std::cout << "starting the jet loop" << std::endl;
         for (unsigned int jet_col_idx = 0; jet_col_idx < loopOverJets; jet_col_idx++) {//looping over all jet systematics, only for nominal diphotons
             std::unique_ptr<vector<TrippleHTag> > tags( new vector<TrippleHTag> );
 
@@ -501,7 +494,6 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 }
 
                 //dijet selection. Do pair according to pt and choose the pair with highest b-tag
-                std::cout << "starting the HHH combination loop" << std::endl;
                 auto sortedIndexByBJetScore = argsort(cleaned_jets_btagScore);
                 
                 auto idx1=sortedIndexByBJetScore[0];
@@ -522,7 +514,6 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     m2P4[0].SetPtEtaPhiE( lv1.Pt(), lv1.Eta(), lv1.Phi() , lv1.E() ) ;
                     m1P4[0].SetPtEtaPhiE( lv2.Pt(), lv2.Eta(), lv2.Phi() , lv2.E() ) ;
                 }
-                std::cout  << "starting the DH variable" << std::endl;
                 dhh[0] = abs(m1P4[0].M() - a* m2P4[0].M())/b ;
 
                 lv1 = cleaned_jets[idx1]->p4()+cleaned_jets[idx3]->p4();
@@ -535,7 +526,6 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     m2P4[1].SetPtEtaPhiE( lv1.Pt(), lv1.Eta(), lv1.Phi() , lv1.E() ) ;
                     m1P4[1].SetPtEtaPhiE( lv2.Pt(), lv2.Eta(), lv2.Phi() , lv2.E() ) ;
                 }
-                std::cout  << "starting the DH variable" << std::endl;
                 dhh[1] = abs(m1P4[1].M() - a* m2P4[1].M())/b ;
 
 
@@ -551,7 +541,6 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 }
                 dhh[2] = abs(m1P4[2].M() - a* m2P4[2].M())/b ;
 
-                std::cout  << "Further checke variable" << std::endl;        
                 auto sortedDhhIdx= argsort(dhh);
                 auto minDhhIdx=sortedDhhIdx[0];
                 auto nextMinDhhIdx=sortedDhhIdx[1];
@@ -573,7 +562,6 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 double sumbtag_ref = -999;
                 bool hasDijet = false;
                 edm::Ptr<flashgg::Jet>  jet1,jet2,jet3,jet4;
-                std::cout  << "Shorting done here" << std::endl;
                 // TODO TODO TODO NEED TO SORT THEM
                 if(minDhhIdx==0){ jet1=cleaned_jets[idx1] ; jet2=cleaned_jets[idx2] ; jet3=cleaned_jets[idx3] ; jet4=cleaned_jets[idx4] ; }
                 if(minDhhIdx==1){ jet1=cleaned_jets[idx1] ; jet2=cleaned_jets[idx3] ; jet3=cleaned_jets[idx2] ; jet4=cleaned_jets[idx4] ; }
@@ -591,7 +579,6 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 //if(tag_obj.dijet().mass()<mjjBoundaries_[0] || tag_obj.dijet().mass()>mjjBoundaries_[1]) continue;
 
                 // compute extra variables here
-                std::cout  << "computingthe MX variable" << std::endl;
                 tag_obj.setMX( tag_obj.p4().mass() - tag_obj.dijet1().mass() - tag_obj.dijet2().mass() - tag_obj.diPhoton()->mass() + 375. );
                 tag_obj.setGenMhh( genMhh );
                 tag_obj.setGenCosThetaStar_CS( genCosThetaStar_CS );
@@ -618,7 +605,6 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 tag_obj.nElectrons2018_ = Electrons2018.size();
 
                 
-                 std::cout << "We don't need to run the ttHTagger now" << std::endl;
                 // tth Tagger
                 if (dottHTagger_)
                 {
@@ -914,9 +900,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
             else
                 evt.put( std::move( tags ),inputJetsSuffixes_[jet_col_idx] );
         }
-        std::cout << "End the jet loop" << std::endl;
     }
-    std::cout << "End the jet loop" << std::endl;
     evt.put( std::move( truths ) );
 }
 
