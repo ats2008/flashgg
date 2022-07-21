@@ -126,7 +126,6 @@ namespace flashgg {
         LorentzVector quadjet_,dijet1_,dijet2_;
         DecorrTransform* transfEBEB_;
         DecorrTransform* transfNotEBEB_;
-        flashgg::DiPhotonCandidate dipho_;
         float dHH;
         
     };

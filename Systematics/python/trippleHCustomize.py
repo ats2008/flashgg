@@ -255,6 +255,7 @@ class TrippleHCustomize():
 
         ## remove single Higgs tags
         if self.customize.trippleHTagsOnly:
+            self.process.flashggTagSequence.remove(self.process.flashggVBFTag)
             self.process.flashggTagSequence.remove(self.process.flashggTTHLeptonicTag)
             self.process.flashggTagSequence.remove(self.process.flashggTTHHadronicTag)
             self.process.flashggTagSequence.remove(self.process.flashggVHEtTag)
@@ -265,7 +266,9 @@ class TrippleHCustomize():
             self.process.flashggTagSequence.remove(self.process.flashggZHLeptonicTag)
             self.process.flashggTagSequence.remove(self.process.flashggVHLeptonicLooseTag)
             self.process.flashggTagSequence.remove(self.process.flashggVHHadronicTag)
+            self.process.flashggTagSequence.remove(self.process.flashggVBFMVA)
             self.process.flashggTagSequence.remove(self.process.flashggVHhadMVA)
+            self.process.flashggTagSequence.remove(self.process.flashggVBFDiPhoDiJetMVA)
             self.process.flashggTagSequence.remove(self.process.flashggTTHDiLeptonTag)
             self.process.flashggTagSequence.remove(self.process.flashggUntagged)
             self.process.flashggTagSequence.remove(self.process.flashggUntagged)

@@ -155,8 +155,14 @@ TrippleHTagProducer::TrippleHTagProducer( const ParameterSet &iConfig ) :
     cc_( consumesCollector() ),
     globalVariablesComputer_(iConfig.getParameter<edm::ParameterSet>("globalVariables"), cc_),
     mvaComputer_(iConfig.getParameter<edm::ParameterSet>("MVAConfig"),  &globalVariablesComputer_)
+
     //mvaComputer_(iConfig.getParameter<edm::ParameterSet>("MVAConfig"))
 {
+    METToken_= consumes<View<flashgg::Met> >( iConfig.getParameter<InputTag> ("METTag") ) ;
+    electronToken_ = consumes<edm::View<flashgg::Electron> >( iConfig.getParameter<edm::InputTag> ("ElectronTag") );
+    muonToken_ = consumes<edm::View<flashgg::Muon> >( iConfig.getParameter<edm::InputTag>("MuonTag") );
+    vertexToken_ = consumes<edm::View<reco::Vertex> >( iConfig.getParameter<edm::InputTag> ("VertexTag") );
+    rhoToken_ = consumes<double>( iConfig.getParameter<edm::InputTag>( "rhoTag" ) );
     mjjBoundaries_ = iConfig.getParameter<vector<double > >( "MJJBoundaries" );
     mvaBoundaries_ = iConfig.getParameter<vector<double > >( "MVABoundaries" );
     mxBoundaries_ = iConfig.getParameter<vector<double > >( "MXBoundaries" );
@@ -267,11 +273,11 @@ TrippleHTagProducer::TrippleHTagProducer( const ParameterSet &iConfig ) :
         elecEtaThresholds = iConfig.getParameter<std::vector<double > >("electronEtaThresholds");
 
         //needed for ttH killer
-        METToken_= consumes<View<flashgg::Met> >( iConfig.getParameter<InputTag> ("METTag") ) ;
-        electronToken_ = consumes<edm::View<flashgg::Electron> >( iConfig.getParameter<edm::InputTag> ("ElectronTag") );
-        muonToken_ = consumes<edm::View<flashgg::Muon> >( iConfig.getParameter<edm::InputTag>("MuonTag") );
-        vertexToken_ = consumes<edm::View<reco::Vertex> >( iConfig.getParameter<edm::InputTag> ("VertexTag") );
-        rhoToken_ = consumes<double>( iConfig.getParameter<edm::InputTag>( "rhoTag" ) );
+        //METToken_= consumes<View<flashgg::Met> >( iConfig.getParameter<InputTag> ("METTag") ) ;
+        //electronToken_ = consumes<edm::View<flashgg::Electron> >( iConfig.getParameter<edm::InputTag> ("ElectronTag") );
+        //muonToken_ = consumes<edm::View<flashgg::Muon> >( iConfig.getParameter<edm::InputTag>("MuonTag") );
+        //vertexToken_ = consumes<edm::View<reco::Vertex> >( iConfig.getParameter<edm::InputTag> ("VertexTag") );
+        //rhoToken_ = consumes<double>( iConfig.getParameter<edm::InputTag>( "rhoTag" ) );
 
         ttHWeightfileName_ = iConfig.getUntrackedParameter<FileInPath>("ttHWeightfile");
         ttHScoreThreshold = iConfig.getParameter<double>("ttHScoreThreshold");
@@ -369,7 +375,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
     // prepare output
     std::unique_ptr<vector<TagTruthBase> > truths( new vector<TagTruthBase> );
     edm::RefProd<vector<TagTruthBase> > rTagTruth = evt.getRefBeforePut<vector<TagTruthBase> >();
-
+    std::cout << "starting the generator loop" << std::endl;
     // MC truth
     TagTruthBase truth_obj;
     double genMhh=0.;
@@ -394,7 +400,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
         }
         truths->push_back( truth_obj );
     }
-
+    std::cout << "strating the photon loop " << std::endl; 
     // read diphotons
     for (unsigned int diphoton_idx = 0; diphoton_idx < diPhotonTokens_.size(); diphoton_idx++) {//looping over all diphoton systematics
         
@@ -404,7 +410,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
         unsigned int loopOverJets = 1;
         
         if (inputDiPhotonSuffixes_[diphoton_idx].empty()) loopOverJets = inputJetsSuffixes_.size();
-
+        std::cout << "starting the jet loop" << std::endl;
         for (unsigned int jet_col_idx = 0; jet_col_idx < loopOverJets; jet_col_idx++) {//looping over all jet systematics, only for nominal diphotons
             std::unique_ptr<vector<TrippleHTag> > tags( new vector<TrippleHTag> );
 
@@ -495,7 +501,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 }
 
                 //dijet selection. Do pair according to pt and choose the pair with highest b-tag
-                
+                std::cout << "starting the HHH combination loop" << std::endl;
                 auto sortedIndexByBJetScore = argsort(cleaned_jets_btagScore);
                 
                 auto idx1=sortedIndexByBJetScore[0];
@@ -516,7 +522,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     m2P4[0].SetPtEtaPhiE( lv1.Pt(), lv1.Eta(), lv1.Phi() , lv1.E() ) ;
                     m1P4[0].SetPtEtaPhiE( lv2.Pt(), lv2.Eta(), lv2.Phi() , lv2.E() ) ;
                 }
-            
+                std::cout  << "starting the DH variable" << std::endl;
                 dhh[0] = abs(m1P4[0].M() - a* m2P4[0].M())/b ;
 
                 lv1 = cleaned_jets[idx1]->p4()+cleaned_jets[idx3]->p4();
@@ -529,6 +535,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     m2P4[1].SetPtEtaPhiE( lv1.Pt(), lv1.Eta(), lv1.Phi() , lv1.E() ) ;
                     m1P4[1].SetPtEtaPhiE( lv2.Pt(), lv2.Eta(), lv2.Phi() , lv2.E() ) ;
                 }
+                std::cout  << "starting the DH variable" << std::endl;
                 dhh[1] = abs(m1P4[1].M() - a* m2P4[1].M())/b ;
 
 
@@ -543,7 +550,8 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     m1P4[2].SetPtEtaPhiE( lv2.Pt(), lv2.Eta(), lv2.Phi() , lv2.E() ) ;
                 }
                 dhh[2] = abs(m1P4[2].M() - a* m2P4[2].M())/b ;
-                
+
+                std::cout  << "Further checke variable" << std::endl;        
                 auto sortedDhhIdx= argsort(dhh);
                 auto minDhhIdx=sortedDhhIdx[0];
                 auto nextMinDhhIdx=sortedDhhIdx[1];
@@ -565,7 +573,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 double sumbtag_ref = -999;
                 bool hasDijet = false;
                 edm::Ptr<flashgg::Jet>  jet1,jet2,jet3,jet4;
-                
+                std::cout  << "Shorting done here" << std::endl;
                 // TODO TODO TODO NEED TO SORT THEM
                 if(minDhhIdx==0){ jet1=cleaned_jets[idx1] ; jet2=cleaned_jets[idx2] ; jet3=cleaned_jets[idx3] ; jet4=cleaned_jets[idx4] ; }
                 if(minDhhIdx==1){ jet1=cleaned_jets[idx1] ; jet2=cleaned_jets[idx3] ; jet3=cleaned_jets[idx2] ; jet4=cleaned_jets[idx4] ; }
@@ -583,6 +591,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 //if(tag_obj.dijet().mass()<mjjBoundaries_[0] || tag_obj.dijet().mass()>mjjBoundaries_[1]) continue;
 
                 // compute extra variables here
+                std::cout  << "computingthe MX variable" << std::endl;
                 tag_obj.setMX( tag_obj.p4().mass() - tag_obj.dijet1().mass() - tag_obj.dijet2().mass() - tag_obj.diPhoton()->mass() + 375. );
                 tag_obj.setGenMhh( genMhh );
                 tag_obj.setGenCosThetaStar_CS( genCosThetaStar_CS );
@@ -601,15 +610,15 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     mva = MVAFlatteningCumulative_->Eval(mvaScaled);
                 }
                 */
-                
+                double mva = 0.0;
                 tag_obj.setEventNumber(evt.id().event() );
-                //tag_obj.setMVA( mva );
+                tag_obj.setMVA( mva );
 
                 tag_obj.nMuons2018_ = Muons2018.size();
                 tag_obj.nElectrons2018_ = Electrons2018.size();
 
-                /*
-
+                
+                 std::cout << "We don't need to run the ttHTagger now" << std::endl;
                 // tth Tagger
                 if (dottHTagger_)
                 {
@@ -625,8 +634,8 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     for( size_t ijet=0; ijet < cleaned_jets.size(); ++ijet) {
                         auto jet = cleaned_jets[ijet];
                         cleaned_physical_jets.push_back(*jet);
-                        if( reco::deltaR(*jet, *leadJet)< vetoConeSize_) continue;
-                        if( reco::deltaR(*jet, *subleadJet)< vetoConeSize_) continue;
+                        if( reco::deltaR(*jet, *jet1)< vetoConeSize_) continue;
+                        if( reco::deltaR(*jet, *jet2)< vetoConeSize_) continue;
                         sumEt+=jet->p4().pt();
                         cleanedDR_jets.push_back(*jet);
                     }
@@ -642,8 +651,8 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     ttHVars["MET"]=p4MET.pt();
                     ttHVars["phiMET"]=p4MET.phi();
 
-                    ttHVars["dPhi1"] = reco::deltaPhi(p4MET.Phi(), leadJet->p4().phi());
-                    ttHVars["dPhi2"] = reco::deltaPhi(p4MET.Phi(), subleadJet->p4().phi());
+                    ttHVars["dPhi1"] = reco::deltaPhi(p4MET.Phi(), jet1->p4().phi());
+                    ttHVars["dPhi2"] = reco::deltaPhi(p4MET.Phi(), jet2->p4().phi());
                     ttHVars["PhoJetMinDr"] = tag_obj.getPhoJetMinDr();
                     ttHVars["njets"] = njets;
 
@@ -663,20 +672,20 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     edm::Handle<double>  rho;
                     evt.getByToken(rhoToken_,rho);
 
-                    ttHVars["ptjet1"] = leadJet->p4().pt();
-                    ttHVars["etajet1"] = leadJet->p4().eta();
-                    ttHVars["phijet1"] = leadJet->p4().phi();
+                    ttHVars["ptjet1"] = jet1->p4().pt();
+                    ttHVars["etajet1"] = jet1->p4().eta();
+                    ttHVars["phijet1"] = jet1->p4().phi();
 
-                    ttHVars["ptjet2"] = subleadJet->p4().pt();
-                    ttHVars["etajet2"] = subleadJet->p4().eta();
-                    ttHVars["phijet2"] = subleadJet->p4().phi();
+                    ttHVars["ptjet2"] =  jet2->p4().pt();
+                    ttHVars["etajet2"] = jet2->p4().eta();
+                    ttHVars["phijet2"] = jet2->p4().phi();
 
                     ttHVars["ptdipho"] = dipho->p4().pt();
                     ttHVars["etadipho"] = dipho->p4().eta();
                     ttHVars["phidipho"] = dipho->p4().phi();
 
                     std::vector<edm::Ptr<flashgg::Electron> > selectedElectrons = selectStdAllElectrons( theElectrons->ptrs(), vertices->ptrs(), leptonPtThreshold, elecEtaThresholds, useElecMVARecipe, useElecLooseId, *rho, evt.isRealData() );
-                    std::vector<edm::Ptr<flashgg::Electron> > tagElectrons = tthKiller_.filterElectrons( selectedElectrons, *tag_obj.diPhoton(), leadJet->p4(), subleadJet->p4(), dRPhoElectronThreshold, dRJetLeptonThreshold);
+                    std::vector<edm::Ptr<flashgg::Electron> > tagElectrons = tthKiller_.filterElectrons( selectedElectrons, *tag_obj.diPhoton(), jet1->p4(), jet2->p4(), dRPhoElectronThreshold, dRJetLeptonThreshold);
 
                     if (tagElectrons.size() > 0)
                     {
@@ -703,7 +712,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                         ttHVars["phie2"] = 0.;
                     }
                     std::vector<edm::Ptr<flashgg::Muon> > selectedMuons = selectAllMuons( theMuons->ptrs(), vertices->ptrs(), muEtaThreshold, leptonPtThreshold, muPFIsoSumRelThreshold);
-                    std::vector<edm::Ptr<flashgg::Muon> > tagMuons = tthKiller_.filterMuons( selectedMuons, *tag_obj.diPhoton(), leadJet->p4(), subleadJet->p4(), dRPhoMuonThreshold, dRJetLeptonThreshold);
+                    std::vector<edm::Ptr<flashgg::Muon> > tagMuons = tthKiller_.filterMuons( selectedMuons, *tag_obj.diPhoton(), jet1->p4(), jet2->p4(), dRPhoMuonThreshold, dRJetLeptonThreshold);
 
                     if (tagMuons.size() > 0)
                     {
@@ -871,10 +880,11 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     HLF_VectorVar_.clear();
                 }
 
-                */
+                
 
                 // choose category and propagate weights
-                int catnum = chooseCategory( tag_obj.MVA(), tag_obj.MX() );
+                //int catnum = chooseCategory( tag_obj.MVA(), tag_obj.MX() );
+                int catnum = 0;
                 tag_obj.setCategoryNumber( catnum );
                 tag_obj.includeWeights( *dipho );
                 //tag_obj.includeWeights( *leadJet );
@@ -882,8 +892,11 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
 
                 // tag_obj.includeWeightsByLabel( *leadJet ,"JetBTagReshapeWeight",false);
                 // tag_obj.includeWeightsByLabel( *subleadJet , "JetBTagReshapeWeight",false );
-                // tag_obj.includeWeightsByLabel( *leadJet   , "JetBTagReshapeWeight" );
-                // tag_obj.includeWeightsByLabel( *subleadJet, "JetBTagReshapeWeight" );
+                tag_obj.includeWeightsByLabel( *jet1   , "JetBTagReshapeWeight" );
+                tag_obj.includeWeightsByLabel( *jet2   , "JetBTagReshapeWeight" );
+                tag_obj.includeWeightsByLabel( *jet3   , "JetBTagReshapeWeight" );
+                tag_obj.includeWeightsByLabel( *jet4   , "JetBTagReshapeWeight" );
+ 
 
                 if (catnum>-1) {
                     if (doCategorization_) {
@@ -901,7 +914,9 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
             else
                 evt.put( std::move( tags ),inputJetsSuffixes_[jet_col_idx] );
         }
+        std::cout << "End the jet loop" << std::endl;
     }
+    std::cout << "End the jet loop" << std::endl;
     evt.put( std::move( truths ) );
 }
 

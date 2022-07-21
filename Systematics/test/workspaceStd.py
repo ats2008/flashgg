@@ -791,3 +791,9 @@ if customize.verboseSystDump:
 #print >> processDumpFile, process.dumpPython()
 # call the customization
 customize(process)
+
+print(dir(process))
+print(process._Process__schedule)
+for i in dir(process):
+    print(i,getattr(process,i))
+exit()

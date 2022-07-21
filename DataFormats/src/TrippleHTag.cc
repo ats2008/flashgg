@@ -20,7 +20,7 @@ TrippleHTag::TrippleHTag( edm::Ptr<flashgg::DiPhotonCandidate> diPho,
       h2SubleadJet_(h2SubleadJet)
 {   
 
-    dipho_ = *diPho;
+    dipho_ = diPho;
     quadjet_ = h1LeadJet_->p4() + h1SubleadJet_->p4() + h2LeadJet_->p4() + h2SubleadJet_->p4();
     diPhotonLV.SetPtEtaPhiE( diPho->pt() , diPho->eta(), diPho->phi() , diPho->energy() );
     
@@ -51,7 +51,7 @@ TrippleHTag::TrippleHTag( edm::Ptr<flashgg::DiPhotonCandidate> diPho,
     
     hhhLV_ = higgsCandidateLV[0] + higgsCandidateLV[1] + higgsCandidateLV[2] ; 
     
-    this->setP4( quadjet_ + dipho_.p4() );
+    this->setP4( quadjet_ + diPhoton()->p4() );
 }
 
 TrippleHTag *TrippleHTag::clone() const
