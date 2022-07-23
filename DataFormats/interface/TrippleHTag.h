@@ -24,7 +24,7 @@ namespace flashgg {
         float ttHScore_;
         float ntagMuons_, ntagElectrons_,nMuons2018_,nElectrons2018_;
         float sumET_, MET_, phiMET_, dPhi1_, dPhi2_, PhoJetMinDr_,PhoJetOtherDr_, njets_, Xtt0_, Xtt1_, pte1_, pte2_, ptmu1_, ptmu2_, ptdipho_, etae1_, etae2_, etamu1_, etamu2_, etadipho_, phie1_, phie2_, phimu1_, phimu2_, phidipho_, fabs_CosThetaStar_CS_, fabs_CosTheta_bb_, mjj_, ptjet1_, ptjet2_, etajet1_, etajet2_, phijet1_, phijet2_; 
-
+        float corrMET_, corrMETPhi_, MjjReg_phi12_, MjjReg_phi1M_, MjjReg_phi2M_, year_;
         void setMVA(double x) { mva_ = x; }
         double MVA() const { return mva_; }
  
@@ -33,8 +33,8 @@ namespace flashgg {
  
         void setMX(double x) { MX_ = x; }
         double MX() const { return MX_; }
-        void setGenMhh(double x) { genMhh_ = x; }
-        double genMhh() const { return genMhh_; }
+        void setGenMhhh(double x) { genMhhh_ = x; }
+        double genMhhh() const { return genMhhh_; }
         void setGenCosThetaStar_CS(double x) { genCosThetaStar_CS_ = x; }
         double genCosThetaStar_CS() const { return genCosThetaStar_CS_; }
         float ttHScore() const { return ttHScore_; }
@@ -108,11 +108,18 @@ namespace flashgg {
         float phidipho() const {return phidipho_;}
         float fabs_CosThetaStar_CS() const {return fabs_CosThetaStar_CS_;}
         float fabs_CosTheta_bb() const {return fabs_CosTheta_bb_;}
-        
         void setDHH( float dHH_) {  dHH=dHH_  ;} 
+        //Extra variables for the L2 regression
+        float corrMET() const {return corrMET_;}
+        float corrMETPhi() const {return corrMETPhi_;}
+        float MjjReg_phi12() const {return MjjReg_phi12_;}
+        float MjjReg_phi1M() const {return MjjReg_phi1M_;}
+        float MjjReg_phi2M() const {return MjjReg_phi2M_;}
+        float year() const {return year_;}
+
 
     private:
-        double mva_, MX_, genMhh_,genCosThetaStar_CS_;
+        double mva_, MX_, genMhhh_,genCosThetaStar_CS_;
         vector<float> benchmark_reweights_;
  //       std::vector<float> mva_prob_;
         long eventNumber_;

@@ -20,7 +20,7 @@
 #include "flashgg/Taggers/interface/LeptonSelection.h"
 #include "flashgg/MicroAOD/interface/MVAComputer.h"
 #include "flashgg/DataFormats/interface/DoubleHttHTagger.h"
-
+#include "flashgg/Taggers/interface/XYMETCorrection_withUL17andUL18andUL16.h"
 #include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
 
 #include <vector>
@@ -43,7 +43,7 @@ private:
     void produce( Event &, const EventSetup & ) override;
     int chooseCategory( float mva, float mx );
     float EvaluateNN();
-    float getGenCosThetaStar_CS(TLorentzVector h1, TLorentzVector h2);
+    float getGenCosThetaStar_CS(TLorentzVector h1, TLorentzVector h2, TLorentzVector h3);
     bool isclose(double a, double b, double rel_tol, double abs_tol);
     void StandardizeHLF();
     void StandardizeParticleList();
@@ -82,7 +82,8 @@ private:
     vector<std::string> bTagType_;
     bool       useJetID_;
     string     JetIDLevel_;
-
+    EDGetTokenT<View<flashgg::Met> > MET_;
+    EDGetTokenT<View<reco::Vertex> > vtxToken_;
     ConsumesCollector cc_;
     GlobalVariablesComputer globalVariablesComputer_;
     MVAComputer<TrippleHTag> mvaComputer_;
@@ -152,6 +153,8 @@ TrippleHTagProducer::TrippleHTagProducer( const ParameterSet &iConfig ) :
     bTagType_( iConfig.getParameter<vector<std::string>>( "BTagType") ),
     useJetID_( iConfig.getParameter<bool>   ( "UseJetID"     ) ),
     JetIDLevel_( iConfig.getParameter<string> ( "JetIDLevel"   ) ),
+    MET_(consumes<View<flashgg::Met> >( iConfig.getParameter<InputTag> ("METTag") ) ),
+    vtxToken_(consumes<edm::View<reco::Vertex> >( iConfig.getParameter<edm::InputTag> ("VertexTag") )),
     cc_( consumesCollector() ),
     globalVariablesComputer_(iConfig.getParameter<edm::ParameterSet>("globalVariables"), cc_),
     mvaComputer_(iConfig.getParameter<edm::ParameterSet>("MVAConfig"),  &globalVariablesComputer_)
@@ -334,11 +337,11 @@ int TrippleHTagProducer::chooseCategory( float mvavalue, float mxvalue)
 }
 
 
-float TrippleHTagProducer::getGenCosThetaStar_CS(TLorentzVector h1, TLorentzVector h2)
+float TrippleHTagProducer::getGenCosThetaStar_CS(TLorentzVector h1, TLorentzVector h2, TLorentzVector h3)
 {
     // cos theta star angle in the Collins Soper frame
-    TLorentzVector hh = h1 + h2;
-    h1.Boost(-hh.BoostVector());
+    TLorentzVector hhh = h1 + h2 + h3;
+    h1.Boost(-hhh.BoostVector());
     return h1.CosTheta();
 }
 
@@ -369,10 +372,9 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
     // prepare output
     std::unique_ptr<vector<TagTruthBase> > truths( new vector<TagTruthBase> );
     edm::RefProd<vector<TagTruthBase> > rTagTruth = evt.getRefBeforePut<vector<TagTruthBase> >();
-    std::cout << "starting the generator loop" << std::endl;
     // MC truth
     TagTruthBase truth_obj;
-    double genMhh=0.;
+    double genMhhh=0.;
     double genCosThetaStar_CS=0.;
     if( ! evt.isRealData() ) {
         Handle<View<reco::GenParticle> > genParticles;
@@ -387,11 +389,12 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
         }
 
         if (selHiggses.size()==3) {  // TODO : add the third H
-            TLorentzVector H1,H2;
+            TLorentzVector H1,H2,H3;
             H1.SetPtEtaPhiE(selHiggses[0]->p4().pt(),selHiggses[0]->p4().eta(),selHiggses[0]->p4().phi(),selHiggses[0]->p4().energy());
             H2.SetPtEtaPhiE(selHiggses[1]->p4().pt(),selHiggses[1]->p4().eta(),selHiggses[1]->p4().phi(),selHiggses[1]->p4().energy());
-            genMhh  = (H1+H2).M();
-            genCosThetaStar_CS = getGenCosThetaStar_CS(H1,H2);
+            H3.SetPtEtaPhiE(selHiggses[1]->p4().pt(),selHiggses[1]->p4().eta(),selHiggses[1]->p4().phi(),selHiggses[1]->p4().energy());  
+            genMhhh  = (H1+H2+H3).M();
+            genCosThetaStar_CS = getGenCosThetaStar_CS(H1,H2,H3);
         }
         truths->push_back( truth_obj );
     }
@@ -567,10 +570,40 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 if(minDhhIdx==1){ jet1=cleaned_jets[idx1] ; jet2=cleaned_jets[idx3] ; jet3=cleaned_jets[idx2] ; jet4=cleaned_jets[idx4] ; }
                 if(minDhhIdx==2){ jet1=cleaned_jets[idx1] ; jet2=cleaned_jets[idx4] ; jet3=cleaned_jets[idx3] ; jet4=cleaned_jets[idx2] ; }
 
+
+                // this MET is only for mass regresion ///////
+                edm::Handle<View<flashgg::Met> > RegMETs;
+                evt.getByToken( MET_, RegMETs );
+                auto MET = RegMETs->ptrAt( 0 );
+                auto & RegMET = MET;
+                // Sum of ET of all jets above 25 GeV and |eta| < 2.5
+                float sum_jetET = 0;
+                for( size_t ijet=0; ijet < cleaned_jets.size();++ijet){
+                     auto jet = cleaned_jets[ijet];
+                     sum_jetET += jet->p4().pt();
+                }
+                // X-Y correction of MET and MET phi
+                double METCorr=0., phiMETCorr=0.;
+                std::pair<double, double> corr_met_xy;
+                Handle<View<reco::Vertex> > vrtxs;
+                evt.getByToken( vtxToken_, vrtxs );
+                int npv = vrtxs->size();
+                METCorr =     METXYCorr_Met_MetPhi(RegMET->pt(), RegMET->phi(),  evt.id().run(), "2017", !(evt.isRealData()),npv, true , false).first;
+                phiMETCorr =  METXYCorr_Met_MetPhi(RegMET->pt(), RegMET->phi(),  evt.id().run(), "2017", !(evt.isRealData()),npv, true , false).second;
+              
+
                 // prepare tag object
                 TrippleHTag tag_obj( dipho, jet1,jet2,jet3,jet4 );
                 tag_obj.setDiPhotonIndex( candIndex );
-                
+                tag_obj.corrMET_ = METCorr;
+                tag_obj.corrMETPhi_ = phiMETCorr;
+
+                tag_obj.MjjReg_phi12_ = reco::deltaPhi(jet1->p4().phi(),jet2->p4().phi());
+                tag_obj.MjjReg_phi1M_ = reco::deltaPhi(jet1->p4().phi(),phiMETCorr);
+                tag_obj.MjjReg_phi2M_ = reco::deltaPhi(jet2->p4().phi(),phiMETCorr);
+                Float_t year = 2017;
+                tag_obj.year_ = year;
+
                 if (loopOverJets == 1)
                     tag_obj.setSystLabel( inputDiPhotonSuffixes_[diphoton_idx] );
                 else
@@ -580,7 +613,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
 
                 // compute extra variables here
                 tag_obj.setMX( tag_obj.p4().mass() - tag_obj.dijet1().mass() - tag_obj.dijet2().mass() - tag_obj.diPhoton()->mass() + 375. );
-                tag_obj.setGenMhh( genMhh );
+                tag_obj.setGenMhhh( genMhhh );
                 tag_obj.setGenCosThetaStar_CS( genCosThetaStar_CS );
                 if ( doReweight_ > 0 ) tag_obj.setBenchmarkReweight( reweight_values );
 
@@ -643,8 +676,8 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     ttHVars["njets"] = njets;
 
                     std::vector<flashgg::Jet> DiJet;
-                    DiJet.push_back(tag_obj.leadJet());
-                    DiJet.push_back(tag_obj.subleadJet());
+                    DiJet.push_back(tag_obj.h1LeadJet());
+                    DiJet.push_back(tag_obj.h1SubleadJet());
                     std::vector<float> Xtt = tthKiller_.XttCalculation(cleaned_physical_jets,DiJet);
                     if(Xtt.size()>3) {
                         ttHVars["Xtt0"] = Xtt[0];
@@ -856,7 +889,8 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     StandardizeParticleList();
 
                     float ttHScore = EvaluateNN();
-                    if (ttHScore < ttHScoreThreshold) continue;
+                    std::cout << ttHScore << std::endl;
+                    //if (ttHScore < ttHScoreThreshold) continue;
 
                     tag_obj.ntagMuons_ = tagMuons.size();
                     tag_obj.ntagElectrons_ = tagElectrons.size();
@@ -884,16 +918,16 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 tag_obj.includeWeightsByLabel( *jet4   , "JetBTagReshapeWeight" );
  
 
-                if (catnum>-1) {
-                    if (doCategorization_) {
-                        if (tag_obj.dijet().mass()<mjjBoundariesLower_[catnum] || tag_obj.dijet().mass()>mjjBoundariesUpper_[catnum]) continue;
-                    }
+                //if (catnum>-1) {
+                    //if (doCategorization_) {
+                    //    if (tag_obj.dijet().mass()<mjjBoundariesLower_[catnum] || tag_obj.dijet().mass()>mjjBoundariesUpper_[catnum]) continue;
+                    //}
                     tags->push_back( tag_obj );
                     // link mc-truth
                     if( ! evt.isRealData() ) {
                         tags->back().setTagTruth( edm::refToPtr( edm::Ref<vector<TagTruthBase> >( rTagTruth, 0 ) ) );
                     }
-                }
+                //}
             }
             if (loopOverJets == 1)
                 evt.put( std::move( tags ),inputDiPhotonSuffixes_[diphoton_idx] );

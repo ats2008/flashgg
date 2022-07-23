@@ -12,7 +12,7 @@ TrippleHTag::TrippleHTag( edm::Ptr<flashgg::DiPhotonCandidate> diPho,
                           edm::Ptr<flashgg::Jet> h1LeadJet , edm::Ptr<flashgg::Jet> h1SubleadJet ,
                           edm::Ptr<flashgg::Jet> h2LeadJet , edm::Ptr<flashgg::Jet> h2SubleadJet )
     : mva_(-.2), 
-      MX_(0.),genMhh_(0.),
+      MX_(0.),genMhhh_(0.),
       genCosThetaStar_CS_(0.),
       h1LeadJet_(h1LeadJet), 
       h1SubleadJet_(h1SubleadJet),  
@@ -128,10 +128,10 @@ float TrippleHTag::HelicityCosTheta( TLorentzVector Booster, TLorentzVector Boos
 
 float TrippleHTag::getPhoJetMinDr() const
 {
-   // float PhoJetMinDr = min( min( deltaR( diPhoton()->leadingPhoton()->p4(), leadJet().p4() ), deltaR( diPhoton()->leadingPhoton()->p4(), subleadJet().p4() ) ), min( deltaR( diPhoton()->subLeadingPhoton()->p4(), leadJet().p4() ), deltaR( diPhoton()->subLeadingPhoton()->p4(), subleadJet().p4() ) ) );
+    float PhoJetMinDr = min( min( deltaR( diPhoton()->leadingPhoton()->p4(), h1LeadJet().p4() ), deltaR( diPhoton()->leadingPhoton()->p4(), h1SubleadJet().p4() ) ), min( deltaR( diPhoton()->subLeadingPhoton()->p4(), h1LeadJet().p4() ), deltaR( diPhoton()->subLeadingPhoton()->p4(), h1SubleadJet().p4() ) ) );
     
-   // return PhoJetMinDr;
-   return 1e9;
+    return PhoJetMinDr;
+   //return 1e9;
 }
 
 float TrippleHTag::getPhoJetOtherDr() const

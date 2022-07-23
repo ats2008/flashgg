@@ -44,7 +44,7 @@ flashggTrippleHTag = cms.EDProducer("FlashggTrippleHTagProducer",
 
                                    MinJetPt   = cms.double(25.),
                                    MaxJetEta   = cms.double(MaxJetEta),
-                                   MJJBoundaries = cms.vdouble(70.,190.),
+                                   MJJBoundaries = cms.vdouble(0.,9999.),
                                    #BTagType = cms.vstring('pfDeepCSVJetTags:probb','pfDeepCSVJetTags:probbb'), #string for btag algorithm
                                    BTagType = cms.vstring('mini_pfDeepFlavourJetTags:probb','mini_pfDeepFlavourJetTags:probbb','mini_pfDeepFlavourJetTags:problepb'), #string for btag algorithm
                                    UseJetID = cms.bool(True),
@@ -88,7 +88,7 @@ flashggTrippleHTag = cms.EDProducer("FlashggTrippleHTagProducer",
                                    TTHLeptonictag_ElePhotonZMassCut = flashggTTHLeptonicTag.ElePhotonZMassCut,
                                    TTHLeptonictag_DeltaRTrkEle =flashggTTHLeptonicTag.DeltaRTrkEle ,
 
-                                   dottHTagger=cms.bool(False), #whether to do ttH killer. 
+                                   dottHTagger=cms.bool(True), #whether to do ttH killer. 
 
                                    ElectronTag=cms.InputTag('flashggSelectedElectrons'),
                                    MuonTag=cms.InputTag('flashggSelectedMuons'),
@@ -105,8 +105,8 @@ flashggTrippleHTag = cms.EDProducer("FlashggTrippleHTagProducer",
                                    useElectronLooseID = cms.bool(True),
                                    electronEtaThresholds=cms.vdouble(1.4442,1.566,2.5),
                                    ttHWeightfile = cms.untracked.FileInPath("%s"%ttHWeightfile), # for now
-                                   # TODO TTH Killer bypass
-                                   ttHScoreThreshold = cms.double(-1e6), #to be updated
+                                   #ttHScoreThreshold = cms.double(0.), #to be updated
+                                   ttHScoreThreshold = cms.double(-1e6),
                                    # For standardization
                                    ttHKiller_mean = ttHKiller_mean,
                                    ttHKiller_std = ttHKiller_std,

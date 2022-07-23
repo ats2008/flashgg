@@ -41,29 +41,47 @@ class TrippleHCustomize():
                     'btagReshapeWeight := weight("JetBTagReshapeWeightCentral")',
                 ]
                 variables += [
-                    "genMhh := genMhh()",
+                    "genMhhh := genMhhh()",
                     "genAbsCosThetaStar_CS := abs(genCosThetaStar_CS())",
                     
                     "h1LeadingJet_hflav := h1LeadJet().hadronFlavour()",
                     "h1LeadingJet_pflav := h1LeadJet().partonFlavour()",
+                    "h1SubleadingJet_hflav := h1SubleadJet().hadronFlavour()",
+                    "h1SubleadingJet_pflav := h1SubleadJet().partonFlavour()",
+                    "h2LeadingJet_hflav := h2LeadJet().hadronFlavour()",
+                    "h2LeadingJet_pflav := h2LeadJet().partonFlavour()",
                     "h2SubleadingJet_hflav := h2SubleadJet().hadronFlavour()",
                     "h2SubleadingJet_pflav := h2SubleadJet().partonFlavour()",
+
                     
                     'btagReshapeWeight := weight("JetBTagReshapeWeightCentral")',
                 ]
-            variables += [
+            variables += [                
                 "h1LeadingJet_bDis := h1LeadJet().bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')",#FIXME make the btag type configurable?
                 "h1LeadingJet_DeepCSV := h1LeadJet().bDiscriminator('pfDeepCSVJetTags:probb')+h1LeadJet().bDiscriminator('pfDeepCSVJetTags:probbb')",#FIXME make the btag type configurable?
                 "h1LeadingJet_DeepFlavour := h1LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probb')+h1LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probbb')+h1LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:problepb')",#FIXME make the btag type configurable?
                 "h1LeadingJet_puJetIdMVA := h1LeadJet().puJetIdMVA()",
-                "h1LeadingJet_puJetIdMVA := h1LeadJet().puJetIdMVA()",
-                
+                "h1LeadingJet_QGL := h1LeadJet().QGL()",                
+
+                "h1SubleadingJet_bDis := h1SubleadJet().bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')",
+                "h1SubleadingJet_DeepCSV := h1SubleadJet().bDiscriminator('pfDeepCSVJetTags:probb')+h1SubleadJet().bDiscriminator('pfDeepCSVJetTags:probbb')",
+                "h1SubleadingJet_DeepFlavour := h1SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probb')+h1SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probbb')+h1SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:problepb')",#FIXME make the btag type configurable?
+                "h1SubleadingJet_puJetIdMVA := h1SubleadJet().puJetIdMVA()",
+                "h1SubleadingJet_QGL := h1SubleadJet().QGL()",
+
+
+                "h2LeadingJet_bDis := h2LeadJet().bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')",#FIXME make the btag type configurable?
+                "h2LeadingJet_DeepCSV := h2LeadJet().bDiscriminator('pfDeepCSVJetTags:probb')+h2LeadJet().bDiscriminator('pfDeepCSVJetTags:probbb')",#FIXME make the btag type configurable?
+                "h2LeadingJet_DeepFlavour := h2LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probb')+h2LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probbb')+h2LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:problepb')",#FIXME make the btag type configurable?
+                "h2LeadingJet_puJetIdMVA := h2LeadJet().puJetIdMVA()",
+                "h2LeadingJet_QGL := h2LeadJet().QGL()", 
+   
                 "h2SubleadingJet_bDis := h2SubleadJet().bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')",
                 "h2SubleadingJet_DeepCSV := h2SubleadJet().bDiscriminator('pfDeepCSVJetTags:probb')+h2SubleadJet().bDiscriminator('pfDeepCSVJetTags:probbb')",
                 "h2SubleadingJet_DeepFlavour := h2SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probb')+h2SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probbb')+h2SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:problepb')",#FIXME make the btag type configurable?
                 "h2SubleadingJet_puJetIdMVA := h2SubleadJet().puJetIdMVA()",
-                "h2SubleadingJet_puJetIdMVA := h2SubleadJet().puJetIdMVA()",
-                
+                "h2SubleadingJet_QGL := h2SubleadJet().QGL()",                
+
                 "absCosThetaStar_CS := abs(getCosThetaStar_CS())",
                 "absCosThetaStar_CS_old := abs(getCosThetaStar_CS_old(6500))",
                 "absCosTheta_bb := abs(CosThetaAngles()[1])",
@@ -131,7 +149,26 @@ class TrippleHCustomize():
                 "ntagMuons := ntagMuons()",
                 "ntagElectrons := ntagElectrons()",
                 "nMuons2018 := nMuons2018()",
-                "nElectrons2018 := nElectrons2018()"
+                "nElectrons2018 := nElectrons2018()",
+                #variables for the L2 energy regression
+                "leadingJet_pt  := h1LeadJet().pt",
+                "leadingJet_eta := h1LeadJet().eta",
+                "leadingJet_phi := h1LeadJet().phi",
+                "leadingJet_mass := h1LeadJet().p4().M()",
+                "leadingJet_e := h1LeadJet().p4().E()",
+                "leadingJet_DeepFlavour := h1LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probb')+h1LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probbb')+h1LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:problepb')", 
+                "subleadingJet_pt  := h1SubleadJet().pt",
+                "subleadingJet_eta := h1SubleadJet().eta",
+                "subleadingJet_phi := h1SubleadJet().phi",
+                "subleadingJet_mass := h1SubleadJet().p4().M()",
+                "subleadingJet_e := h1SubleadJet().p4().E()",
+                "subleadingJet_DeepFlavour := h1SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probb')+h1SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probbb')+h1SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:problepb')",
+                "corrMET := corrMET",
+                "corrMETPhi := corrMETPhi",
+                "MjjReg_phi12 := MjjReg_phi12",
+                "MjjReg_phi1M := MjjReg_phi1M",
+                "MjjReg_phi2M := MjjReg_phi2M",
+                "year := year"          
             ]
         if self.customize.doBJetRegression and self.customize.trippleHTagsOnly: variables +=[
                 "h1LeadingJet_bRegNNCorr := h1LeadJet().userFloat('bRegNNCorr')",
@@ -145,7 +182,10 @@ class TrippleHCustomize():
                 "h2SubleadingJet_bRegNNResolution := h2SubleadJet().userFloat('bRegNNResolution')",
                 
                 "sigmaM1Jets := getSigmaM1OverMJets()",
-                "sigmaM2Jets := getSigmaM2OverMJets()"
+                "sigmaM2Jets := getSigmaM2OverMJets()",
+                "leadingJet_bRegNNCorr := h1LeadJet().userFloat('bRegNNCorr')",
+                "subleadingJet_bRegNNCorr :=  h1SubleadJet().userFloat('bRegNNCorr')"
+
         ]
         if self.customize.doubleHReweight > 0: 
             for num in range(0,12):  #12 benchmarks + 1 SM
