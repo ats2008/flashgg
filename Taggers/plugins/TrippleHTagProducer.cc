@@ -500,7 +500,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 auto sortedIndexByBJetScore = argsort(cleaned_jets_btagScore);
                 
                 auto idx1=sortedIndexByBJetScore[0];
-                auto idx2=sortedIndexByBJetScore[2];
+                auto idx2=sortedIndexByBJetScore[1];
                 auto idx3=sortedIndexByBJetScore[2];
                 auto idx4=sortedIndexByBJetScore[3];
                 vector<float> dhh(3);
@@ -562,14 +562,13 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     }
                 }
 
-                double sumbtag_ref = -999;
-                bool hasDijet = false;
                 edm::Ptr<flashgg::Jet>  jet1,jet2,jet3,jet4;
-                // TODO TODO TODO NEED TO SORT THEM
+                
                 if(minDhhIdx==0){ jet1=cleaned_jets[idx1] ; jet2=cleaned_jets[idx2] ; jet3=cleaned_jets[idx3] ; jet4=cleaned_jets[idx4] ; }
                 if(minDhhIdx==1){ jet1=cleaned_jets[idx1] ; jet2=cleaned_jets[idx3] ; jet3=cleaned_jets[idx2] ; jet4=cleaned_jets[idx4] ; }
                 if(minDhhIdx==2){ jet1=cleaned_jets[idx1] ; jet2=cleaned_jets[idx4] ; jet3=cleaned_jets[idx3] ; jet4=cleaned_jets[idx2] ; }
-
+                if(jet1->pt() < jet2->pt() ) { auto tmp = jet2 ; jet2 = jet1 ; jet1 = tmp  ; }
+                if(jet3->pt() < jet4->pt() ) { auto tmp = jet4 ; jet4 = jet3 ; jet3 = tmp  ; }
 
                 // this MET is only for mass regresion ///////
                 edm::Handle<View<flashgg::Met> > RegMETs;
@@ -889,7 +888,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     StandardizeParticleList();
 
                     float ttHScore = EvaluateNN();
-                    std::cout << ttHScore << std::endl;
+                    // std::cout << ttHScore << std::endl;
                     //if (ttHScore < ttHScoreThreshold) continue;
 
                     tag_obj.ntagMuons_ = tagMuons.size();
