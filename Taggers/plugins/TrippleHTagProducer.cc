@@ -547,13 +547,13 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 auto sortedDhhIdx= argsort(dhh);
                 auto minDhhIdx=sortedDhhIdx[0];
                 auto nextMinDhhIdx=sortedDhhIdx[1];
-                if( dhh[minDhhIdx] < 30.0)
+                if( fabs(dhh[minDhhIdx] - dhh[nextMinDhhIdx] )< 30.0)
                 {
-                    auto bVec=(m1P4[minDhhIdx] + m2P4[minDhhIdx] ).BoostVector();
+                    auto bVec=-1.0*(m1P4[minDhhIdx] + m2P4[minDhhIdx] ).BoostVector();
                     m1P4[minDhhIdx].Boost( bVec);  m2P4[minDhhIdx].Boost( bVec);
                     if(m1P4[minDhhIdx].Pt() < m2P4[minDhhIdx].Pt()) { auto& tmp= m1P4[minDhhIdx] ; m1P4[minDhhIdx] = m2P4[minDhhIdx] ; m2P4[minDhhIdx]=tmp;}
 
-                    bVec=(m1P4[nextMinDhhIdx] + m2P4[nextMinDhhIdx] ).BoostVector();
+                    bVec=-1.0*(m1P4[nextMinDhhIdx] + m2P4[nextMinDhhIdx] ).BoostVector();
                     m1P4[nextMinDhhIdx].Boost( bVec);  m2P4[nextMinDhhIdx].Boost( bVec);
                     if(m1P4[nextMinDhhIdx].Pt() < m2P4[nextMinDhhIdx].Pt()) { auto& tmp= m1P4[nextMinDhhIdx] ; m1P4[nextMinDhhIdx] = m2P4[nextMinDhhIdx] ; m2P4[nextMinDhhIdx]=tmp;}
                     if(m1P4[nextMinDhhIdx].Pt() > m1P4[minDhhIdx].Pt())
