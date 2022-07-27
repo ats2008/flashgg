@@ -474,12 +474,15 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 std::vector<float> cleaned_jets_btagScore;
                 for( size_t ijet=0; ijet < jets->size(); ++ijet ) 
                    {//jets are ordered in pt
+
                     auto jet = jets->ptrAt(ijet);
                     if (jet->pt()<minJetPt_ || fabs(jet->eta())>maxJetEta_)continue;
+
                     double btag=0.;
                     for (unsigned int btag_num=0; btag_num<bTagType_.size(); btag_num++)
                         btag+=jet->bDiscriminator(bTagType_[btag_num]);
                     if (btag<0) continue;//FIXME threshold might not be 0? For CMVA and DeepCSV it is 0.
+                    
                     if( useJetID_ ) {
                         if( JetIDLevel_ == "Loose" && !jet->passesJetID  ( flashgg::Loose ) ) continue;
                         if( JetIDLevel_ == "Tight" && !jet->passesJetID  ( flashgg::Tight ) ) continue;
@@ -495,7 +498,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 if( cleaned_jets.size() < 4 ) {
                     continue;
                 }
-
+                
                 //dijet selection. Do pair according to pt and choose the pair with highest b-tag
                 auto sortedIndexByBJetScore = argsort(cleaned_jets_btagScore);
                 
@@ -503,6 +506,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 auto idx2=sortedIndexByBJetScore[1];
                 auto idx3=sortedIndexByBJetScore[2];
                 auto idx4=sortedIndexByBJetScore[3];
+                
                 vector<float> dhh(3);
                 
                 TLorentzVector m1P4[3],m2P4[3];
@@ -547,6 +551,8 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 auto sortedDhhIdx= argsort(dhh);
                 auto minDhhIdx=sortedDhhIdx[0];
                 auto nextMinDhhIdx=sortedDhhIdx[1];
+                
+
                 if( fabs(dhh[minDhhIdx] - dhh[nextMinDhhIdx] )< 30.0)
                 {
                     auto bVec=-1.0*(m1P4[minDhhIdx] + m2P4[minDhhIdx] ).BoostVector();
@@ -561,7 +567,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                         minDhhIdx=nextMinDhhIdx;    
                     }
                 }
-
+                
                 edm::Ptr<flashgg::Jet>  jet1,jet2,jet3,jet4;
                 
                 if(minDhhIdx==0){ jet1=cleaned_jets[idx1] ; jet2=cleaned_jets[idx2] ; jet3=cleaned_jets[idx3] ; jet4=cleaned_jets[idx4] ; }

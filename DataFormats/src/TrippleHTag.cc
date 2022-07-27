@@ -21,7 +21,15 @@ TrippleHTag::TrippleHTag( edm::Ptr<flashgg::DiPhotonCandidate> diPho,
 {   
 
     dipho_ = diPho;
+    
+    if( (h1LeadJet_->p4() + h1SubleadJet_->p4()).pt() < (h2LeadJet_->p4() +h2SubleadJet_->p4()).pt() )
+    {
+         auto tmp=h1LeadJet_  ; h1LeadJet_=h2LeadJet_ ; h2LeadJet_=tmp;
+              tmp=h1SubleadJet_  ; h1SubleadJet_=h2SubleadJet_ ; h2SubleadJet_=tmp;
+    }
+
     quadjet_ = h1LeadJet_->p4() + h1SubleadJet_->p4() + h2LeadJet_->p4() + h2SubleadJet_->p4();
+
     diPhotonLV.SetPtEtaPhiE( diPho->pt() , diPho->eta(), diPho->phi() , diPho->energy() );
     
     h1LeadJetLV_.SetPtEtaPhiE( h1LeadJet_->pt() , h1LeadJet_->eta(), h1LeadJet_->phi() , (h1LeadJet_->p4()).E() );
