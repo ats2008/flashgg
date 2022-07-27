@@ -127,7 +127,7 @@ Note: make sure to run `cmsenv` before executing any of these commands.  If crab
 In order to be able to run on some samples, the samples need to be imported first. Three steps are needed for this.
 
 1. _`import`_. Import copies the list of files from DBS to a local json file called `catalog`. 
-   ```
+```
 fggManageSamples.py -C <campagin> -V <flashggversion> import 
 # e.g. fggManageSamples.py -C HggPhys14 -V Phys14MicroAODV1 import 
 ```
