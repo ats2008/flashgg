@@ -286,8 +286,8 @@ class TrippleHCustomize():
         # customizing training file (with/wo Mjj) 
         training_type = 'with_Mjj' if self.customize.doubleHTagsUseMjj else 'wo_Mjj' 
         
-        self.process.flashggTrippleHTag.MVAConfig.weights=cms.FileInPath(str(self.metaConditions["doubleHTag"]["weightsFile"][training_type]))  
-        self.process.flashggTrippleHTag.MVAFlatteningFileName = cms.untracked.FileInPath(str(self.metaConditions["doubleHTag"]["MVAFlatteningFileName"][training_type]))
+        self.process.flashggTrippleHTag.MVAConfig.weights=cms.FileInPath(str(self.metaConditions["trippleHTag"]["weightsFile"][training_type]))  
+        self.process.flashggTrippleHTag.MVAFlatteningFileName = cms.untracked.FileInPath(str(self.metaConditions["trippleHTag"]["MVAFlatteningFileName"][training_type]))
         if training_type == 'with_Mjj' :
             self.process.flashggTrippleHTag.MVABoundaries = cms.vdouble(0.44,0.67,0.79)
             self.process.flashggTrippleHTag.MXBoundaries = cms.vdouble(250.,385.,470.,640.,250.,345.,440.,515.,250.,330.,365.,545.)
@@ -314,14 +314,14 @@ class TrippleHCustomize():
             pass
         ## customize meta conditions
 
-        self.process.flashggTrippleHTag.JetIDLevel=cms.string(str(self.metaConditions["doubleHTag"]["jetID"]))
-        self.process.flashggTrippleHTag.MVAscaling = cms.double(self.metaConditions["doubleHTag"]["MVAscalingValue"])
+        self.process.flashggTrippleHTag.JetIDLevel=cms.string(str(self.metaConditions["trippleHTag"]["jetID"]))
+        self.process.flashggTrippleHTag.MVAscaling = cms.double(self.metaConditions["trippleHTag"]["MVAscalingValue"])
         self.process.flashggTrippleHTag.dottHTagger = cms.bool(self.customize.doDoubleHttHKiller)
-        self.process.flashggTrippleHTag.ttHWeightfile = cms.untracked.FileInPath(str(self.metaConditions["doubleHTag"]["ttHWeightfile"]))
-        self.process.flashggTrippleHTag.ttHKiller_mean = cms.vdouble(self.metaConditions["doubleHTag"]["ttHKiller_mean"])
-        self.process.flashggTrippleHTag.ttHKiller_std = cms.vdouble(self.metaConditions["doubleHTag"]["ttHKiller_std"])
-        self.process.flashggTrippleHTag.ttHKiller_listmean = cms.vdouble(self.metaConditions["doubleHTag"]["ttHKiller_listmean"])
-        self.process.flashggTrippleHTag.ttHKiller_liststd = cms.vdouble(self.metaConditions["doubleHTag"]["ttHKiller_liststd"])
+        self.process.flashggTrippleHTag.ttHWeightfile = cms.untracked.FileInPath(str(self.metaConditions["trippleHTag"]["ttHWeightfile"]))
+        self.process.flashggTrippleHTag.ttHKiller_mean = cms.vdouble(self.metaConditions["trippleHTag"]["ttHKiller_mean"])
+        self.process.flashggTrippleHTag.ttHKiller_std = cms.vdouble(self.metaConditions["trippleHTag"]["ttHKiller_std"])
+        self.process.flashggTrippleHTag.ttHKiller_listmean = cms.vdouble(self.metaConditions["trippleHTag"]["ttHKiller_listmean"])
+        self.process.flashggTrippleHTag.ttHKiller_liststd = cms.vdouble(self.metaConditions["trippleHTag"]["ttHKiller_liststd"])
         self.process.flashggTrippleHTag.MaxJetEta = cms.double(self.metaConditions["bTagSystematics"]["eta"])
 
         ## add double Higgs tag to the tag sequence
@@ -348,7 +348,7 @@ class TrippleHCustomize():
             self.process.flashggTagSequence.remove(self.process.flashggUntagged)
             self.process.flashggTagSequence.remove(self.process.flashggTHQLeptonicTag)
  
-    def doubleHTagMerger(self,systlabels=[]):
+    def trippleHTagMerger(self,systlabels=[]):
         '''
         merging step taking into account that different syst variations are produced by the same producer in the case of the HH tags
         '''
@@ -367,27 +367,15 @@ class TrippleHCustomize():
 
     def trippleHTagRunSequence(self,systlabels,jetsystlabels,phosystlabels):
         if self.customize.trippleHTagsOnly: 
-            self.doubleHTagMerger(systlabels)
+            self.trippleHTagMerger(systlabels)
 
         if len(systlabels)>1 :
             getattr(self.process, "flashggTrippleHTag").JetsSuffixes = cms.vstring([systlabels[0]]+jetsystlabels)
             getattr(self.process, "flashggTrippleHTag").DiPhotonSuffixes = cms.vstring([systlabels[0]]+phosystlabels)
 
-        if self.customize.doubleHReweight>0:
-            self.addNodesReweighting()
-    
         if self.customize.doTrippleHGenAnalysis:
             self.addGenAnalysis()
 
-
-
-    def addNodesReweighting(self):
-        if self.customize.doubleHReweight > 0 :
-            from flashgg.Taggers.flashggDoubleHReweight_cfi import flashggDoubleHReweight
-            self.process.flashggDoubleHReweight = flashggDoubleHReweight
-            self.process.flashggDoubleHReweight.doReweight = self.customize.doubleHReweight
-            self.process.flashggDoubleHReweight.weightsFile = cms.untracked.FileInPath(str(self.metaConditions["doubleHTag"]["NodesReweightingFileName"]))
-            self.process.p.replace(self.process.flashggDoubleHTagSequence, self.process.flashggDoubleHReweight*self.process.flashggDoubleHTagSequence)
 
     def addGenAnalysis(self):
         if self.customize.processId == "Data": 
@@ -423,7 +411,6 @@ class TrippleHCustomize():
         if not self.customize.ForceGenDiphotonProduction:
             genVariables += ["mgg := mass",
                              "mbb := dijet.mass",
-                             
                              "leadPho_px := leadingPhoton.px",
                              "leadPho_py := leadingPhoton.py",
                              "leadPho_pz := leadingPhoton.pz",
@@ -443,13 +430,6 @@ class TrippleHCustomize():
                              "subleadJet_e  := subLeadingJet.energy",
                             ]
             
-        if self.customize.doubleHReweight > 0: 
-             for num in range(0,12):
-                   genVariables += ["benchmark_reweight_%d := getHHbbggBenchmarkReweight(%d)"%(num,num)]
-             genVariables += ["benchmark_reweight_SM := getHHbbggBenchmarkReweight(12)"]
-             genVariables += ["benchmark_reweight_box := getHHbbggBenchmarkReweight(13)"]
-             genVariables += ["benchmark_reweight_2017fake := getHHbbggBenchmarkReweight(14)"]
-
         ## define categories for gen-level dumper
         cfgTools.addCategory(self.process.genDiphotonDumper,  ## events with not reco-level tag
                              "NoTag", 'isTagged("flashggNoTag")',1,
