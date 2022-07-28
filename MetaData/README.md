@@ -127,7 +127,7 @@ Note: make sure to run `cmsenv` before executing any of these commands.  If crab
 In order to be able to run on some samples, the samples need to be imported first. Three steps are needed for this.
 
 1. _`import`_. Import copies the list of files from DBS to a local json file called `catalog`. 
-   ```
+```
 fggManageSamples.py -C <campagin> -V <flashggversion> import 
 # e.g. fggManageSamples.py -C HggPhys14 -V Phys14MicroAODV1 import 
 ```
@@ -165,46 +165,46 @@ Importing /GJet_Pt40_doubleEMEnriched_TuneZ2star_13TeV-pythia6/sethzenz-HggPhys1
    ```fggManageSample -C <campaign> review```
    An example of the output is shown below.
    ```
-Will use the following datasets catalog:
-/afs/cern.ch/work/m/musella/private/Analysis/FGG_7_2_1_patch4/src/flashgg/MetaData/data/HggPhys14/datasets.json
-keep this dataset (yes/no/all)?
- /DYJetsToLL_M-50_13TeV-madgraph-pythia8/sethzenz-HggPhys14-Phys14MicroAODV1-v0-Phys14DR-PU4bx50_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
- [yna] a
-More than one sample for GJet_Pt40_doubleEMEnriched_TuneZ2star_13TeV-pythia6:
- /GJet_Pt40_doubleEMEnriched_TuneZ2star_13TeV-pythia6/sethzenz-HggPhys14-Phys14MicroAODV1-v0-Phys14DR-PU20bx25_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
- /GJet_Pt40_doubleEMEnriched_TuneZ2star_13TeV-pythia6/sethzenz-HggPhys14-Phys14MicroAODV1-v1-Phys14DR-PU20bx25_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
-Keep all? [yn] n
-keep this dataset?
- /GJet_Pt40_doubleEMEnriched_TuneZ2star_13TeV-pythia6/sethzenz-HggPhys14-Phys14MicroAODV1-v0-Phys14DR-PU20bx25_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
- [yn] n
-keep this dataset?
- /GJet_Pt40_doubleEMEnriched_TuneZ2star_13TeV-pythia6/sethzenz-HggPhys14-Phys14MicroAODV1-v1-Phys14DR-PU20bx25_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
- [yn] y
+	Will use the following datasets catalog:
+	/afs/cern.ch/work/m/musella/private/Analysis/FGG_7_2_1_patch4/src/flashgg/MetaData/data/HggPhys14/datasets.json
+	keep this dataset (yes/no/all)?
+	 /DYJetsToLL_M-50_13TeV-madgraph-pythia8/sethzenz-HggPhys14-Phys14MicroAODV1-v0-Phys14DR-PU4bx50_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
+	 [yna] a
+	More than one sample for GJet_Pt40_doubleEMEnriched_TuneZ2star_13TeV-pythia6:
+	 /GJet_Pt40_doubleEMEnriched_TuneZ2star_13TeV-pythia6/sethzenz-HggPhys14-Phys14MicroAODV1-v0-Phys14DR-PU20bx25_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
+	 /GJet_Pt40_doubleEMEnriched_TuneZ2star_13TeV-pythia6/sethzenz-HggPhys14-Phys14MicroAODV1-v1-Phys14DR-PU20bx25_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
+	Keep all? [yn] n
+	keep this dataset?
+	 /GJet_Pt40_doubleEMEnriched_TuneZ2star_13TeV-pythia6/sethzenz-HggPhys14-Phys14MicroAODV1-v0-Phys14DR-PU20bx25_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
+	 [yn] n
+	keep this dataset?
+	 /GJet_Pt40_doubleEMEnriched_TuneZ2star_13TeV-pythia6/sethzenz-HggPhys14-Phys14MicroAODV1-v1-Phys14DR-PU20bx25_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
+	 [yn] y
 
-[...]
-```
+	[...]
+   ```
 
 3. `check`. Finally, the content of the catalog should be validated using the `check` command. This command will run on all the files in the catalog, check that they can be correctly read in, and also compute sum of weights (for MC samples) which will be later used to reweight the samples. 
-   ```
-fggManageSamples.py -C <campaign>  check 
+    ```
+	fggManageSamples.py -C <campaign>  check 
 
-Will use the following datasets catalog:
-/afs/cern.ch/work/m/musella/private/Analysis/FGG_7_2_1_patch4/src/flashgg/MetaData/data/HggPhys14/datasets.json
-Checking all datasets
-Checking dataset /TTbarH_HToGG_M-125_13TeV_amcatnlo-pythia8-tauola/sethzenz-HggPhys14-Phys14MicroAODV1-v1-Phys14DR-PU20bx25_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
-Checking dataset /WH_ZH_HToGG_M-125_13TeV_pythia6/sethzenz-HggPhys14-Phys14MicroAODV1-v1-Phys14DR-PU20bx25_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
-Checking dataset /GJet_Pt40_doubleEMEnriched_TuneZ2star_13TeV-pythia6/sethzenz-HggPhys14-Phys14MicroAODV1-v1-Phys14DR-PU20bx25_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
-Checking dataset /DYJetsToLL_M-50_13TeV-madgraph-pythia8/sethzenz-HggPhys14-Phys14MicroAODV1-v1-Phys14DR-PU4bx50_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
-Checking dataset /VBF_HToGG_M-125_13TeV-powheg-pythia6/sethzenz-HggPhys14-Phys14MicroAODV1-v1-Phys14DR-PU20bx25_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
-Checking dataset /GluGluToHToGG_M-125_13TeV-powheg-pythia6/sethzenz-HggPhys14-Phys14MicroAODV1-v1-Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
-Finished jobs: 0. Total jobs: 26
-[...]
-Finished jobs: 25. Total jobs: 26
-Writing catalog
-Done
-```
-   After such operation, the bad files will be marked as such in the catalog and the total weight for each file will be reported.
+	Will use the following datasets catalog:
+	/afs/cern.ch/work/m/musella/private/Analysis/FGG_7_2_1_patch4/src/flashgg/MetaData/data/HggPhys14/datasets.json
+	Checking all datasets
+	Checking dataset /TTbarH_HToGG_M-125_13TeV_amcatnlo-pythia8-tauola/sethzenz-HggPhys14-Phys14MicroAODV1-v1-Phys14DR-PU20bx25_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
+	Checking dataset /WH_ZH_HToGG_M-125_13TeV_pythia6/sethzenz-HggPhys14-Phys14MicroAODV1-v1-Phys14DR-PU20bx25_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
+	Checking dataset /GJet_Pt40_doubleEMEnriched_TuneZ2star_13TeV-pythia6/sethzenz-HggPhys14-Phys14MicroAODV1-v1-Phys14DR-PU20bx25_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
+	Checking dataset /DYJetsToLL_M-50_13TeV-madgraph-pythia8/sethzenz-HggPhys14-Phys14MicroAODV1-v1-Phys14DR-PU4bx50_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
+	Checking dataset /VBF_HToGG_M-125_13TeV-powheg-pythia6/sethzenz-HggPhys14-Phys14MicroAODV1-v1-Phys14DR-PU20bx25_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
+	Checking dataset /GluGluToHToGG_M-125_13TeV-powheg-pythia6/sethzenz-HggPhys14-Phys14MicroAODV1-v1-Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER
+	Finished jobs: 0. Total jobs: 26
+	[...]
+	Finished jobs: 25. Total jobs: 26
+	Writing catalog
+	Done
    ```
+   After such operation, the bad files will be marked as such in the catalog and the total weight for each file will be reported.
+```
 {
     "/DYJetsToLL_M-50_13TeV-madgraph-pythia8/sethzenz-HggPhys14-Phys14MicroAODV1-v1-Phys14DR-PU4bx50_PHYS14_25_V1-v1-d7bb6e4a06af43bf30c0514b01defd0b/USER": {
         "files": [
