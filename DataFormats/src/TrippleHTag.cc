@@ -60,7 +60,243 @@ TrippleHTag::TrippleHTag( edm::Ptr<flashgg::DiPhotonCandidate> diPho,
     hhhLV_ = higgsCandidateLV[0] + higgsCandidateLV[1] + higgsCandidateLV[2] ; 
     
     this->setP4( quadjet_ + diPhoton()->p4() );
+    addAK4JetBranches();
 }
+
+void TrippleHTag::addAK4JetBranches()
+{
+       storageMapFloatArray["jet_isValid"]         = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_pt"]         = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_eta"]        = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_phi"]        = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_mass"]          = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_csvScore"]   = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_deepCSVScore"]    = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_deepJetScore"]    = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_particleNetAK4_B"]  = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_particleNetAK4_CvsL"]  = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_particleNetAK4_CvsB"]  = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_particleNetAK4_QvsG"]  = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_particleNetAK4_puIdDisc"]  = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_flavour"]         = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_pFlavour"]        = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_bJetRegCorr"]     = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_bJetRegRes"]         = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_puJetIdMVA"]   = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_isLoose"]   = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_isTight"]  = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_isTight2017"]  = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_isTight2018"]  = new Float_t[N_JET_MAX];
+}
+
+float TrippleHTag::getAK4JetDetails(  std::string item_ ,  Int_t idx) const
+{
+    TString item(item_.c_str());
+    if(  idx >= N_JET_MAX  )
+    {
+        return -1.111e3;       
+    }
+    auto itm=storageMapFloatArray.find("jet_isValid") ;
+    if( itm == storageMapFloatArray.end() )
+    {
+        return -1.111e3;       
+    }
+    if( (itm->second)[idx]< 0.0 )
+    {
+        return -1.111e3;       
+    }
+
+    itm=storageMapFloatArray.find(item) ;
+    return (itm->second)[idx];
+}
+
+void TrippleHTag::addAK4JetDetails( const std::vector<edm::Ptr<flashgg::Jet> > jets)
+{   
+    int idx=0;
+    for( size_t ijet=0; ijet < N_JET_MAX; ++ijet ) 
+    {
+            storageMapFloatArray["jet_isValid"][idx]       = -1 ;
+            storageMapFloatArray["jet_isValid"][idx]        = 0.0 ;
+            storageMapFloatArray["jet_pt"][idx]        = 0.0 ;
+            storageMapFloatArray["jet_eta"][idx]       = 0.0 ;
+            storageMapFloatArray["jet_phi"][idx]       = 0.0 ;
+            storageMapFloatArray["jet_mass"][idx]         = 0.0 ;
+            storageMapFloatArray["jet_csvScore"][idx]  = 0.0 ;
+            storageMapFloatArray["jet_deepCSVScore"][idx]   = 0.0 ;
+            storageMapFloatArray["jet_deepJetScore"][idx]   = 0.0 ;
+            storageMapFloatArray["jet_particleNetAK4_B"][idx] = 0.0 ;
+            storageMapFloatArray["jet_particleNetAK4_CvsL"][idx] = 0.0 ;
+            storageMapFloatArray["jet_particleNetAK4_CvsB"][idx] = 0.0 ;
+            storageMapFloatArray["jet_particleNetAK4_QvsG"][idx] = 0.0 ;
+            storageMapFloatArray["jet_particleNetAK4_puIdDisc"][idx] = 0.0 ;
+
+            storageMapFloatArray["jet_flavour"][idx]        = 0.0 ;
+            storageMapFloatArray["jet_pFlavour"][idx]       = 0.0 ;
+            storageMapFloatArray["jet_bJetRegCorr"][idx]    = 0.0 ;
+            storageMapFloatArray["jet_bJetRegRes"][idx]        = 0.0 ;
+
+            storageMapFloatArray["jet_puJetIdMVA"][idx] = 0.0 ;
+            storageMapFloatArray["jet_isLoose"][idx] = 0.0 ;
+            storageMapFloatArray["jet_isTight"][idx] = 0.0 ;
+            storageMapFloatArray["jet_isTight2017"][idx] = 0.0 ;
+            storageMapFloatArray["jet_isTight2018"][idx] = 0.0 ;
+            
+            idx++;
+
+    }
+    idx=0;
+    for( size_t ijet=0; ijet < jets.size(); ++ijet ) 
+        {   
+            // jets are ordered in pt
+            auto recJet = jets[ijet];
+            auto pt        = recJet->pt();
+            storageMapFloatArray["jet_isValid"][idx]        = 1.0 ;
+            storageMapFloatArray["jet_pt"][idx]        = recJet->pt();
+            storageMapFloatArray["jet_eta"][idx]       = recJet->eta();
+            storageMapFloatArray["jet_phi"][idx]       = recJet->phi();
+            storageMapFloatArray["jet_mass"][idx]         = recJet->mass();
+            storageMapFloatArray["jet_csvScore"][idx]  = recJet->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+            storageMapFloatArray["jet_deepCSVScore"][idx]   = recJet->bDiscriminator("pfDeepCSVJetTags:probb") + recJet->bDiscriminator("pfDeepCSVJetTags:probbb");
+            storageMapFloatArray["jet_deepJetScore"][idx]   = recJet->bDiscriminator("pfDeepFlavourJetTags:probb")+
+                                                                     recJet->bDiscriminator("pfDeepFlavourJetTags:probbb")+
+                                                                     recJet->bDiscriminator("pfDeepFlavourJetTags:problepb");
+            storageMapFloatArray["jet_particleNetAK4_B"][idx] = pt>15?recJet->bDiscriminator("pfParticleNetAK4DiscriminatorsJetTags:BvsAll"):-1 ;
+            storageMapFloatArray["jet_particleNetAK4_CvsL"][idx] = pt > 15 ? recJet->bDiscriminator("pfParticleNetAK4DiscriminatorsJetTags:CvsL"):-1 ; 
+            storageMapFloatArray["jet_particleNetAK4_CvsB"][idx] = pt > 15 ? recJet->bDiscriminator("pfParticleNetAK4DiscriminatorsJetTags:CvsB"):-1 ; 
+            storageMapFloatArray["jet_particleNetAK4_QvsG"][idx] = pt > 15 ? recJet->bDiscriminator("pfParticleNetAK4DiscriminatorsJetTags:QvsG"):-1 ; 
+            storageMapFloatArray["jet_particleNetAK4_puIdDisc"][idx] = pt > 15 ? 1-recJet->bDiscriminator("pfParticleNetAK4JetTags:probpu"):-1 ; 
+
+            storageMapFloatArray["jet_flavour"][idx]        = recJet->hadronFlavour() ;
+            storageMapFloatArray["jet_pFlavour"][idx]       = recJet->partonFlavour();
+            storageMapFloatArray["jet_bJetRegCorr"][idx]    = recJet->userFloat("bRegNNCorr" );
+            storageMapFloatArray["jet_bJetRegRes"][idx]        = recJet->userFloat("bRegNNResolution");
+
+            storageMapFloatArray["jet_puJetIdMVA"][idx] = recJet->puJetIdMVA();
+            storageMapFloatArray["jet_isLoose"][idx] = recJet->passesJetID( flashgg::Loose );
+            storageMapFloatArray["jet_isTight"][idx] = recJet->passesJetID( flashgg::Tight );
+            storageMapFloatArray["jet_isTight2017"][idx] = recJet->passesJetID( flashgg::Tight2017 );
+            storageMapFloatArray["jet_isTight2018"][idx] = recJet->passesJetID( flashgg::Tight2018 );
+            
+            idx++;
+            if (idx >= N_JET_MAX ) break;
+        }
+}
+
+/*
+void TrippleHTag::fillFatJetBranches()
+{
+
+    int idx=0;
+    for( size_t ijet=0; ijet < N_FATJET_MAX; ++ijet ) 
+    {
+            storageMapFloatArray["fatJets_isValid"][idx]        = -1.0 ;
+    }
+    for( size_t ijet=0; ijet < jets->size(); ++ijet ) 
+        {   
+            // jets are ordered in pt
+            auto &recJet = jets->ptrAt(ijet);
+            storageMapFloatArray["fatJets_isValid"][idx]        = 1.0 ;
+            storageMapFloatArray["fatJets_pt"][idx]        = recJet.pt();
+            storageMapFloatArray["fatJets_eta"][idx]       = recJet.eta();
+            storageMapFloatArray["fatJets_phi"][idx]       = recJet.phi();
+            storageMapFloatArray["fatJets_mass"][idx]         = recJet.mass();
+            storageMapFloatArray["fatJets_csvScore"][idx]  = recJet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+            storageMapFloatArray["fatJets_deepCSVScore"][idx]   = recJet.bDiscriminator("pfDeepCSVJetTags:probb") + recJet.bDiscriminator("pfDeepCSVJetTags:probbb");
+            storageMapFloatArray["fatJets_deepJetScore"][idx]   = recJet.bDiscriminator("pfDeepFlavourJetTags:probb")+
+                                                               recJet.bDiscriminator("pfDeepFlavourJetTags:probbb")+
+                                                               recJet.bDiscriminator("pfDeepFlavourJetTags:problepb");
+
+            storageMapFloatArray["fatJets_flavour"][idx]        = recJet.hadronFlavour() ;
+            storageMapFloatArray["fatJets_pFlavour"][idx]       = recJet.partonFlavour();
+            storageMapFloatArray["fatJets_rawFactor"][idx] = 1.0 - recJet.jecFactor("Uncorrected");
+            storageMapFloatArray["fatJets_msoftdrop"][idx] = recJet.groomedMass("SoftDropPuppi");
+            storageMapFloatArray["fatJets_nConstituents"][idx] = recJet.numberOfDaughters();
+
+            storageMapFloatArray["fatJets_btagDeepB"][idx] = (recJet.bDiscriminator("pfDeepCSVJetTags:probb")+recJet.bDiscriminator("pfDeepCSVJetTags:probbb")) >= 0 ?
+                                               recJet.bDiscriminator("pfDeepCSVJetTags:probb")+recJet.bDiscriminator("pfDeepCSVJetTags:probbb") : -1 ; 
+										//"DeepCSV b+bb tag discriminator"
+            storageMapFloatArray["fatJets_btagCSVV2"][idx] = recJet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") ; 
+										//" pfCombinedInclusiveSecondaryVertexV2 b-tag discriminator (aka CSVV2)"
+            storageMapFloatArray["fatJets_btagHbb"][idx] = recJet.bDiscriminator("pfBoostedDoubleSecondaryVertexAK8BJetTags") ; 
+										//"Higgs to BB tagger discriminator"
+            storageMapFloatArray["fatJets_btagDDBvLV2"][idx] = recJet.bDiscriminator("pfMassIndependentDeepDoubleBvLV2JetTags:probHbb") ; 
+										//"DeepDoubleX V2(mass-decorrelated) discriminator for H(Z)->bb vs QCD"
+            storageMapFloatArray["fatJets_btagDDCvLV2"][idx] = recJet.bDiscriminator("pfMassIndependentDeepDoubleCvLV2JetTags:probHcc") ; 
+										//"DeepDoubleX V2 (mass-decorrelated) discriminator for H(Z)->cc vs QCD"
+            storageMapFloatArray["fatJets_btagDDCvBV2"][idx] = recJet.bDiscriminator("pfMassIndependentDeepDoubleCvBV2JetTags:probHcc") ; 
+										//"DeepDoubleX V2 (mass-decorrelated) discriminator for H(Z)->cc vs H(Z)->bb"
+            storageMapFloatArray["fatJets_deepTag_TvsQCD"][idx] = recJet.bDiscriminator("pfDeepBoostedDiscriminatorsJetTags:TvsQCD") ; 
+										//"DeepBoostedJet tagger top vs QCD discriminator"
+            storageMapFloatArray["fatJets_deepTag_WvsQCD"][idx] = recJet.bDiscriminator("pfDeepBoostedDiscriminatorsJetTags:WvsQCD") ; 
+										//"DeepBoostedJet tagger W vs QCD discriminator"
+            storageMapFloatArray["fatJets_deepTag_ZvsQCD"][idx] = recJet.bDiscriminator("pfDeepBoostedDiscriminatorsJetTags:ZvsQCD") ; 
+										//"DeepBoostedJet tagger Z vs QCD discriminator"
+            storageMapFloatArray["fatJets_deepTag_H"][idx] = recJet.bDiscriminator("pfDeepBoostedJetTags:probHbb")+recJet.bDiscriminator("pfDeepBoostedJetTags:probHcc")
+                                                            + recJet.bDiscriminator("pfDeepBoostedJetTags:probHqqqq") ; 
+										//"DeepBoostedJet tagger H(bb,cc,4q) sum"
+            storageMapFloatArray["fatJets_deepTag_QCD"][idx] = recJet.bDiscriminator("pfDeepBoostedJetTags:probQCDbb")
+                                                                +recJet.bDiscriminator("pfDeepBoostedJetTags:probQCDcc")
+                                                                +recJet.bDiscriminator("pfDeepBoostedJetTags:probQCDb")
+                                                                +recJet.bDiscriminator("pfDeepBoostedJetTags:probQCDc")
+                                                                +recJet.bDiscriminator("pfDeepBoostedJetTags:probQCDothers") ; 
+										//"DeepBoostedJet tagger QCD(bb,cc,b,c,others) sum"
+            storageMapFloatArray["fatJets_deepTag_QCDothers"][idx] = recJet.bDiscriminator("pfDeepBoostedJetTags:probQCDothers") ; 
+										//"DeepBoostedJet tagger QCDothers value"
+            storageMapFloatArray["fatJets_deepTagMD_TvsQCD"][idx] = recJet.bDiscriminator("pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:TvsQCD") ; 
+										//"Mass-decorrelated DeepBoostedJet tagger top vs QCD discriminator"
+            storageMapFloatArray["fatJets_deepTagMD_WvsQCD"][idx] = recJet.bDiscriminator("pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:WvsQCD") ; 
+										//"Mass-decorrelated DeepBoostedJet tagger W vs QCD discriminator"
+            storageMapFloatArray["fatJets_deepTagMD_ZvsQCD"][idx] = recJet.bDiscriminator("pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ZvsQCD") ; 
+										//"Mass-decorrelated DeepBoostedJet tagger Z vs QCD discriminator"
+            storageMapFloatArray["fatJets_deepTagMD_ZHbbvsQCD"][idx] = recJet.bDiscriminator("pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ZHbbvsQCD") ; 
+										//"Mass-decorrelated DeepBoostedJet tagger Z/H->bb vs QCD discriminator"
+            storageMapFloatArray["fatJets_deepTagMD_ZbbvsQCD"][idx] = recJet.bDiscriminator("pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ZbbvsQCD") ; 
+										//"Mass-decorrelated DeepBoostedJet tagger Z->bb vs QCD discriminator"
+            storageMapFloatArray["fatJets_deepTagMD_HbbvsQCD"][idx] = recJet.bDiscriminator("pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:HbbvsQCD") ; 
+										//"Mass-decorrelated DeepBoostedJet tagger H->bb vs QCD discriminator"
+            storageMapFloatArray["fatJets_deepTagMD_ZHccvsQCD"][idx] = recJet.bDiscriminator("pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ZHccvsQCD") ; 
+										//"Mass-decorrelated DeepBoostedJet tagger Z/H->cc vs QCD discriminator"
+            storageMapFloatArray["fatJets_deepTagMD_H4qvsQCD"][idx] = recJet.bDiscriminator("pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:H4qvsQCD") ; 
+										//"Mass-decorrelated DeepBoostedJet tagger H->4q vs QCD discriminator"
+            storageMapFloatArray["fatJets_deepTagMD_bbvsLight"][idx] = recJet.bDiscriminator("pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:bbvsLight") ; 
+										//"Mass-decorrelated DeepBoostedJet tagger Z/H/gluon->bb vs light flavour discriminator"
+            storageMapFloatArray["fatJets_deepTagMD_ccvsLight"][idx] = recJet.bDiscriminator("pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ccvsLight") ; 
+										//"Mass-decorrelated DeepBoostedJet tagger Z/H/gluon->cc vs light flavour discriminator"
+            storageMapFloatArray["fatJets_particleNet_TvsQCD"][idx] = recJet.bDiscriminator("pfParticleNetDiscriminatorsJetTags:TvsQCD") ; 
+										//"ParticleNet tagger top vs QCD discriminator"
+            storageMapFloatArray["fatJets_particleNet_WvsQCD"][idx] = recJet.bDiscriminator("pfParticleNetDiscriminatorsJetTags:WvsQCD") ; 
+										//"ParticleNet tagger W vs QCD discriminator"
+            storageMapFloatArray["fatJets_particleNet_ZvsQCD"][idx] = recJet.bDiscriminator("pfParticleNetDiscriminatorsJetTags:ZvsQCD") ; 
+										//"ParticleNet tagger Z vs QCD discriminator"
+            storageMapFloatArray["fatJets_particleNet_HbbvsQCD"][idx] = recJet.bDiscriminator("pfParticleNetDiscriminatorsJetTags:HbbvsQCD") ; 
+										//"ParticleNet tagger H(->bb) vs QCD discriminator"
+            storageMapFloatArray["fatJets_particleNet_HccvsQCD"][idx] = recJet.bDiscriminator("pfParticleNetDiscriminatorsJetTags:HccvsQCD") ; 
+										//"ParticleNet tagger H(->cc) vs QCD discriminator"
+            storageMapFloatArray["fatJets_particleNet_H4qvsQCD"][idx] = recJet.bDiscriminator("pfParticleNetDiscriminatorsJetTags:H4qvsQCD") ; 
+										//"ParticleNet tagger H(->VV->qqqq) vs QCD discriminator"
+            storageMapFloatArray["fatJets_particleNet_QCD"][idx] = recJet.bDiscriminator("pfParticleNetJetTags:probQCDbb")+recJet.bDiscriminator("pfParticleNetJetTags:probQCDcc")+recJet.bDiscriminator("pfParticleNetJetTags:probQCDb")+recJet.bDiscriminator("pfParticleNetJetTags:probQCDc")+recJet.bDiscriminator("pfParticleNetJetTags:probQCDothers") ; 
+										//"ParticleNet tagger QCD(bb,cc,b,c,others) sum"
+            storageMapFloatArray["fatJets_particleNet_mass"][idx] = recJet.bDiscriminator("pfParticleNetMassRegressionJetTags:mass") ; 
+										//"ParticleNet mass regression"
+            storageMapFloatArray["fatJets_particleNetMD_Xbb"][idx] = recJet.bDiscriminator("pfMassDecorrelatedParticleNetJetTags:probXbb") ; 
+										//"Mass-decorrelated ParticleNet tagger raw X->bb score. For X->bb vs QCD tagging, use Xbb/(Xbb+QCD)"
+            storageMapFloatArray["fatJets_particleNetMD_Xcc"][idx] = recJet.bDiscriminator("pfMassDecorrelatedParticleNetJetTags:probXcc") ; //"Mass-decorrelated ParticleNet tagger raw X->cc score. For X->cc vs QCD tagging, use Xcc/(Xcc+QCD)"
+            storageMapFloatArray["fatJets_particleNetMD_Xqq"][idx] = recJet.bDiscriminator("pfMassDecorrelatedParticleNetJetTags:probXqq") ; //"Mass-decorrelated ParticleNet tagger raw X->qq (uds) score. For X->qq vs QCD tagging, use Xqq/(Xqq+QCD). For W vs QCD tagging, use (Xcc+Xqq)/(Xcc+Xqq+QCD)"
+            storageMapFloatArray["fatJets_particleNetMD_QCD"][idx] = recJet.bDiscriminator("pfMassDecorrelatedParticleNetJetTags:probQCDbb")
+                                                            +recJet.bDiscriminator("pfMassDecorrelatedParticleNetJetTags:probQCDcc")
+                                                            +recJet.bDiscriminator("pfMassDecorrelatedParticleNetJetTags:probQCDb")
+                                                            +recJet.bDiscriminator("pfMassDecorrelatedParticleNetJetTags:probQCDc")
+                                                            +recJet.bDiscriminator("pfMassDecorrelatedParticleNetJetTags:probQCDothers") ; 
+                                                            //"Mass-decorrelated ParticleNet tagger raw QCD score"
+        idx++;
+
+        if(idx > N_FATJET_MAX)
+        {
+            break;
+        }
+    }
+}
+*/
 
 TrippleHTag *TrippleHTag::clone() const
 {

@@ -170,6 +170,26 @@ class TrippleHCustomize():
                 "MjjReg_phi2M := MjjReg_phi2M",
                 "year := year"          
             ]
+            ##  Adding all jet information
+            njetMax=8
+            varsToGet=["jet_isValid","jet_pt",
+                        "jet_eta","jet_phi",
+                        "jet_mass","jet_csvScore",
+                        "jet_deepCSVScore","jet_deepJetScore",
+                        "jet_particleNetAK4_B","jet_particleNetAK4_CvsL",
+                        "jet_particleNetAK4_CvsB","jet_particleNetAK4_QvsG",
+                        "jet_particleNetAK4_puIdDisc","jet_flavour",
+                        "jet_pFlavour","jet_bJetRegCorr",
+                        "jet_bJetRegRes","jet_puJetIdMVA",
+                        "jet_isLoose","jet_isTight",
+                        "jet_isTight2017","jet_isTight2018" ]
+            jetVarList=[]
+            for jetVar in varsToGet:
+                for i in range(njetMax):
+                    jetVarList.append( jetVar.replace('_','_'+str(i)+'_')+' := getAK4JetDetails("'+jetVar+'" , '+ str(i) +' )' )
+            variables += jetVarList
+            print(jetVarList)
+
         if self.customize.doBJetRegression and self.customize.trippleHTagsOnly: variables +=[
                 "h1LeadingJet_bRegNNCorr := h1LeadJet().userFloat('bRegNNCorr')",
                 "h1LeadingJet_bRegNNResolution := h1LeadJet().userFloat('bRegNNResolution')",

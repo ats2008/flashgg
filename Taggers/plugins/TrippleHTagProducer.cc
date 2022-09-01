@@ -481,6 +481,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     double btag=0.;
                     for (unsigned int btag_num=0; btag_num<bTagType_.size(); btag_num++)
                         btag+=jet->bDiscriminator(bTagType_[btag_num]);
+                   /*
                     if (btag<0) continue;//FIXME threshold might not be 0? For CMVA and DeepCSV it is 0.
                     
                     if( useJetID_ ) {
@@ -489,11 +490,14 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                         if( JetIDLevel_ == "Tight2017" && !jet->passesJetID  ( flashgg::Tight2017 ) ) continue;
                         if( JetIDLevel_ == "Tight2018" && !jet->passesJetID  ( flashgg::Tight2018 ) ) continue;
                     }
-                    if( reco::deltaR( *jet, *(dipho->leadingPhoton()) ) > vetoConeSize_ && reco::deltaR( *jet, *(dipho->subLeadingPhoton()) ) > vetoConeSize_ ) {
+                    if( reco::deltaR( *jet, *(dipho->leadingPhoton()) ) < vetoConeSize_ || reco::deltaR( *jet, *(dipho->subLeadingPhoton()) ) < vetoConeSize_ ) {
+                    continue;
+                    }*/
                         cleaned_jets.push_back( jet );
                         cleaned_jets_btagScore.push_back(-1.0*btag);
-                    }
                 }
+                
+                // TODO : TODO : TODO : Need to mask this condition
 
                 if( cleaned_jets.size() < 4 ) {
                     continue;
@@ -599,6 +603,8 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
 
                 // prepare tag object
                 TrippleHTag tag_obj( dipho, jet1,jet2,jet3,jet4 );
+                tag_obj.addAK4JetDetails(cleaned_jets);
+                //tag_obj.addAK8JetDetails(ak8_jets);
                 tag_obj.setDiPhotonIndex( candIndex );
                 tag_obj.corrMET_ = METCorr;
                 tag_obj.corrMETPhi_ = phiMETCorr;

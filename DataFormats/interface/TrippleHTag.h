@@ -10,6 +10,8 @@
 
 #include "flashgg/Taggers/interface/FunctionHelpers.h"
 
+#define N_JET_MAX 8
+
 namespace flashgg {
 
     class TrippleHTag: public DiPhotonTagBase, public reco::LeafCandidate
@@ -25,6 +27,9 @@ namespace flashgg {
         float ntagMuons_, ntagElectrons_,nMuons2018_,nElectrons2018_;
         float sumET_, MET_, phiMET_, dPhi1_, dPhi2_, PhoJetMinDr_,PhoJetOtherDr_, njets_, Xtt0_, Xtt1_, pte1_, pte2_, ptmu1_, ptmu2_, ptdipho_, etae1_, etae2_, etamu1_, etamu2_, etadipho_, phie1_, phie2_, phimu1_, phimu2_, phidipho_, fabs_CosThetaStar_CS_, fabs_CosTheta_bb_, mjj_, ptjet1_, ptjet2_, etajet1_, etajet2_, phijet1_, phijet2_; 
         float corrMET_, corrMETPhi_, MjjReg_phi12_, MjjReg_phi1M_, MjjReg_phi2M_, year_;
+        
+        std::map<TString,Float_t * > storageMapFloatArray;
+
         void setMVA(double x) { mva_ = x; }
         double MVA() const { return mva_; }
  
@@ -116,6 +121,10 @@ namespace flashgg {
         float MjjReg_phi1M() const {return MjjReg_phi1M_;}
         float MjjReg_phi2M() const {return MjjReg_phi2M_;}
         float year() const {return year_;}
+        
+        void addAK4JetBranches();
+        void addAK4JetDetails( const std::vector<edm::Ptr<flashgg::Jet> > jets  );
+        float getAK4JetDetails(  std::string item ,  Int_t idx) const  ;
 
 
     private:
