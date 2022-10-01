@@ -31,7 +31,7 @@ flashggTrippleHTag = cms.EDProducer("FlashggTrippleHTagProducer",
                                    JetsCollSize = cms.uint32(maxJetCollections), #
                                    JetsSuffixes = cms.vstring(''), #nominal and systematic variations 
                                    GenParticleTag = cms.InputTag( "flashggPrunedGenParticles" ), # to compute MC-truth info
-                                   
+                                   doHHHGen       = cms.bool(False), 
                                    VetoConeSize   = cms.double(0.4),
                                    MinLeadPhoPt   = cms.double(1./3.),
                                    MinSubleadPhoPt   = cms.double(0.25),

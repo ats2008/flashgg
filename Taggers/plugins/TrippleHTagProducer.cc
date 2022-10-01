@@ -80,6 +80,7 @@ private:
     vector<double>mjjBoundariesLower_;
     vector<double>mjjBoundariesUpper_;
     vector<std::string> bTagType_;
+    bool doHHHGen;
     bool       useJetID_;
     string     JetIDLevel_;
     EDGetTokenT<View<flashgg::Met> > MET_;
@@ -151,6 +152,7 @@ TrippleHTagProducer::TrippleHTagProducer( const ParameterSet &iConfig ) :
     minJetPt_( iConfig.getParameter<double> ( "MinJetPt" ) ),
     maxJetEta_( iConfig.getParameter<double> ( "MaxJetEta" ) ),
     bTagType_( iConfig.getParameter<vector<std::string>>( "BTagType") ),
+    doHHHGen( iConfig.getParameter<bool>   ( "doHHHGen"     ) ),
     useJetID_( iConfig.getParameter<bool>   ( "UseJetID"     ) ),
     JetIDLevel_( iConfig.getParameter<string> ( "JetIDLevel"   ) ),
     MET_(consumes<View<flashgg::Met> >( iConfig.getParameter<InputTag> ("METTag") ) ),
@@ -476,7 +478,8 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                    {//jets are ordered in pt
 
                     auto jet = jets->ptrAt(ijet);
-                    if (jet->pt()<minJetPt_ || fabs(jet->eta())>maxJetEta_)continue;
+                    //if (jet->pt()<minJetPt_ || fabs(jet->eta())>maxJetEta_)continue;
+                    if (jet->pt() < 15.0 ) continue;
 
                     double btag=0.;
                     for (unsigned int btag_num=0; btag_num<bTagType_.size(); btag_num++)
@@ -604,6 +607,13 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 // prepare tag object
                 TrippleHTag tag_obj( dipho, jet1,jet2,jet3,jet4 );
                 tag_obj.addAK4JetDetails(cleaned_jets);
+                if(  doHHHGen  and ! evt.isRealData() )
+                {
+                    edm::Handle<edm::View<reco::GenParticle>> pruned;
+                    evt.getByToken(genParticleToken_, pruned);
+                    tag_obj.fillHHHGenDetails(pruned);
+                }
+
                 //tag_obj.addAK8JetDetails(ak8_jets);
                 tag_obj.setDiPhotonIndex( candIndex );
                 tag_obj.corrMET_ = METCorr;
@@ -946,7 +956,9 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 evt.put( std::move( tags ),inputJetsSuffixes_[jet_col_idx] );
         }
     }
+
     evt.put( std::move( truths ) );
+
 }
 
 void TrippleHTagProducer::StandardizeHLF()

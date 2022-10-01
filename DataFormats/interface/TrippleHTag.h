@@ -126,6 +126,11 @@ namespace flashgg {
         void addAK4JetDetails( const std::vector<edm::Ptr<flashgg::Jet> > jets  );
         float getAK4JetDetails(  std::string item ,  Int_t idx) const  ;
 
+        void addGenObjectBranches();
+        void fillGenPrticle(TString tag, const reco::Candidate* particle);
+        void fillGenPrticle(TString tag, const reco::GenParticle &particle);
+        void fillHHHGenDetails( edm::Handle<edm::View<reco::GenParticle>> pruned  );
+        float getGenDetails( std::string item_) const;
 
     private:
         double mva_, MX_, genMhhh_,genCosThetaStar_CS_;

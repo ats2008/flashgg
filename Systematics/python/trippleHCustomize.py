@@ -170,6 +170,35 @@ class TrippleHCustomize():
                 "MjjReg_phi2M := MjjReg_phi2M",
                 "year := year"          
             ]
+            if self.customize.doHHHGen:
+                self.process.flashggTrippleHTag.doHHHGen = True
+            ## Addibg all the genHHH 
+                varsToGet=[ "gen_@@ITEM_pt",
+                            "gen_@@ITEM_pdgId",
+                            "gen_@@ITEM_y",
+                            "gen_@@ITEM_eta",
+                            "gen_@@ITEM_phi",
+                            "gen_@@ITEM_e",
+                            "gen_@@ITEM_numberOfDaughters",
+                          ]
+                genVarList=[]
+                for item in ["H1","H2","H3",
+                             "H1_dau1","H2_dau1",
+                             "H3_dau1","H1_dau2",
+                             "H2_dau2","H3_dau2"]:
+                    for var in varsToGet:
+                        genVarList.append( var.replace('@@ITEM',item)+' := getGenDetails("'+var.replace( '@@ITEM',item  )+'" )' )
+
+                variables += genVarList
+                print()
+                print()
+                print(" GEN-VAR List  ")
+                print(genVarList)
+                print()
+                print()
+
+
+
             ##  Adding all jet information
             njetMax=8
             varsToGet=["jet_isValid","jet_pt",
@@ -189,6 +218,7 @@ class TrippleHCustomize():
                     jetVarList.append( jetVar.replace('_','_'+str(i)+'_')+' := getAK4JetDetails("'+jetVar+'" , '+ str(i) +' )' )
             variables += jetVarList
             print(jetVarList)
+
 
         if self.customize.doBJetRegression and self.customize.trippleHTagsOnly: variables +=[
                 "h1LeadingJet_bRegNNCorr := h1LeadJet().userFloat('bRegNNCorr')",

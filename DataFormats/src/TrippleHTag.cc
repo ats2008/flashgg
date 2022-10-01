@@ -2,6 +2,21 @@
 
 using namespace flashgg;
 
+bool isAncestor(const reco::Candidate* ancestor, const reco::Candidate * particle)
+{
+//particle is already the ancestor
+        if(ancestor == particle ) return true;
+
+//otherwise loop on mothers, if any and return true if the ancestor is found
+        for(size_t i=0;i< particle->numberOfMothers();i++)
+        {   
+                if(particle->mother(i)->pdgId() != ancestor->pdgId()) continue;
+                if(isAncestor(ancestor,particle->mother(i))) return true;
+        }
+//if we did not return yet, then particle and ancestor are not relatives
+        return false;
+}
+
 TrippleHTag::TrippleHTag() : DiPhotonTagBase::DiPhotonTagBase(), mva_(-2.) 
 {  
 }
@@ -61,7 +76,200 @@ TrippleHTag::TrippleHTag( edm::Ptr<flashgg::DiPhotonCandidate> diPho,
     
     this->setP4( quadjet_ + diPhoton()->p4() );
     addAK4JetBranches();
+    addGenObjectBranches();
 }
+
+void TrippleHTag::addGenObjectBranches()
+{
+    storageMapFloatArray["gen_isValid"] = new Float_t;
+    for(TString tag : {"H1","H2","H3"} )
+    {
+      
+      //std::cout<<" setting tag : "<<tag<<" \n";
+      storageMapFloatArray["gen_"+tag+"_pt"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_pdgId"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_y"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_eta"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_phi"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_e"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_numberOfDaughters"] = new Float_t;
+    }
+
+    for(TString tag : {"H1_dau1","H2_dau1","H3_dau1","H1_dau2","H2_dau2","H3_dau2"} )
+    {
+      //std::cout<<" setting tag : "<<tag<<" \n";
+      storageMapFloatArray["gen_"+tag+"_pt"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_pdgId"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_y"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_eta"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_phi"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_e"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_numberOfDaughters"] = new Float_t;
+    }
+}
+void TrippleHTag::fillGenPrticle(TString tag, const reco::Candidate* particle)
+{
+      storageMapFloatArray["gen_"+tag+"_pt"][0]   = particle->pt() ;
+      storageMapFloatArray["gen_"+tag+"_pdgId"][0]   = particle->pdgId() ;
+      storageMapFloatArray["gen_"+tag+"_y"][0]   = particle->y() ;
+      storageMapFloatArray["gen_"+tag+"_eta"][0]   = particle->eta() ;
+      storageMapFloatArray["gen_"+tag+"_phi"][0]   = particle->phi() ;
+      storageMapFloatArray["gen_"+tag+"_e"][0]   = particle->energy() ;
+      storageMapFloatArray["gen_"+tag+"_numberOfDaughters"][0]   = particle->numberOfDaughters() ;
+}
+
+void TrippleHTag::fillGenPrticle(TString tag, const reco::GenParticle &particle)
+{
+      storageMapFloatArray["gen_"+tag+"_pt"][0]   = particle.pt() ;
+      storageMapFloatArray["gen_"+tag+"_pdgId"][0]   = particle.pdgId() ;
+      storageMapFloatArray["gen_"+tag+"_y"][0]   = particle.y() ;
+      storageMapFloatArray["gen_"+tag+"_eta"][0]   = particle.eta() ;
+      storageMapFloatArray["gen_"+tag+"_phi"][0]   = particle.phi() ;
+      storageMapFloatArray["gen_"+tag+"_e"][0]   = particle.energy() ;
+      storageMapFloatArray["gen_"+tag+"_numberOfDaughters"][0]   = particle.numberOfDaughters() ;
+}
+
+
+float TrippleHTag::getGenDetails( std::string item_) const
+{
+    TString item(item_.c_str());
+
+    auto itm=storageMapFloatArray.find("gen_isValid") ;
+    if( itm == storageMapFloatArray.end() )
+    {
+        return -1.111e3;       
+    }
+    if( (itm->second[0] )< 0.0 )
+    {
+        return -1.111e3;       
+    }
+
+    itm=storageMapFloatArray.find(item) ;
+    
+    if( itm == storageMapFloatArray.end() )
+    {
+        std::cout<<"Item asked not found getGenDetails || "<<item<<" || \n";
+    }
+    return (itm->second[0]);
+}
+
+
+void TrippleHTag::fillHHHGenDetails( edm::Handle<edm::View<reco::GenParticle>> pruned  )
+{
+
+    TLorentzVector b1;
+    TLorentzVector b2;
+    int nHiggs=0;
+    size_t higgsIdx[10];
+    Float_t higgsPt[10];
+    for(size_t i=0; i< pruned->size();i++)
+    {
+        const reco::GenParticle * part_pru = (&(*pruned)[i]);
+          if(not (&(*pruned)[i])->isHardProcess()) continue;
+    //      if((&(*pruned)[i])->isHardProcess())
+    //       std::cout<<i<<" pdgid : "<< part_pru->pdgId() << "    status : " << part_pru->status() 
+    //                << "   isHard " << part_pru->isHardProcess()  
+    //                << "   mother " << part_pru->mother()->pdgId()   << std::endl;
+          if( part_pru->pdgId()==25 )
+          {
+                higgsPt[nHiggs]=part_pru->pt();
+                higgsIdx[nHiggs]=i;
+             //   std::cout<<" got higgs : "<<part_pru->pdgId()<<" , "
+             //             <<higgsIdx[nHiggs]<<" , "<<higgsPt[nHiggs]<<" , "<<part_pru->numberOfDaughters()<<"\n";
+                nHiggs++;
+          }
+
+    }
+    bool isBad=false;
+    if(nHiggs!=3)
+    {
+        std::cout<<"No Higgs found in event !\n";
+        isBad=true;
+    }
+
+    size_t h1Idx(0),h2Idx(1),h3Idx(2);
+    
+    if(higgsPt[h1Idx] < higgsPt[h2Idx]) { auto x=h2Idx ; h2Idx=h1Idx ; h1Idx=x ;}
+    if(higgsPt[h2Idx] < higgsPt[h3Idx]) { auto x=h3Idx ; h3Idx=h2Idx ; h2Idx=x ;}
+    if(higgsPt[h1Idx] < higgsPt[h2Idx]) { auto x=h2Idx ; h2Idx=h1Idx ; h1Idx=x ;}
+    
+    h1Idx=higgsIdx[h1Idx];
+    h2Idx=higgsIdx[h2Idx];
+    h3Idx=higgsIdx[h3Idx];
+    
+    fillGenPrticle("H1",pruned->at(h1Idx));
+    const reco::GenParticle *  hig= &(pruned->at(h1Idx));
+    const reco::GenParticle * dau[2];
+    Int_t dIdx(0);
+    for(size_t i=0; i< pruned->size();i++)
+    {
+        const reco::GenParticle * part_pru = (&(*pruned)[i]);
+        if(isAncestor(hig,part_pru) and  hig->pdgId()!=part_pru->pdgId())
+        {
+                dau[dIdx]=part_pru;
+                dIdx++;
+        }
+    }
+    if(dIdx ==2) {
+        fillGenPrticle("H1_dau1",dau[0]);
+        fillGenPrticle("H1_dau2",dau[1]);
+    }
+    else{
+        isBad=true;
+        std::cout<<" null here \n";
+    }
+    
+    fillGenPrticle("H2",pruned->at(h2Idx));
+    hig= &(pruned->at(h2Idx));
+    dau[0]=nullptr; dau[1]=nullptr;
+    dIdx=0;
+    for(size_t i=0; i< pruned->size();i++)
+    {
+        const reco::GenParticle * part_pru = (&(*pruned)[i]);
+        if(isAncestor(hig,part_pru) and  hig->pdgId()!=part_pru->pdgId())
+        {
+                dau[dIdx]=part_pru;
+                dIdx++;
+        }
+    }
+    if(dIdx ==2) {
+        fillGenPrticle("H2_dau1",dau[0]);
+        fillGenPrticle("H2_dau2",dau[1]);
+    }
+    else {
+        isBad=true;
+        std::cout<<" null here \n";
+    }
+    
+    fillGenPrticle("H3",pruned->at(h3Idx));
+    hig= &(pruned->at(h3Idx));
+    dau[0]=nullptr; dau[1]=nullptr;
+    dIdx=0;
+    for(size_t i=0; i< pruned->size();i++)
+    {
+        const reco::GenParticle * part_pru = (&(*pruned)[i]);
+        if(isAncestor(hig,part_pru) and  hig->pdgId()!=part_pru->pdgId())
+        {
+                dau[dIdx]=part_pru;
+                dIdx++;
+        }
+    }
+    if(dIdx ==2) {
+        fillGenPrticle("H3_dau1",dau[0]);
+        fillGenPrticle("H3_dau2",dau[1]);
+    }
+    else {
+        isBad=true;
+        std::cout<<" null here \n";
+    }
+    if(isBad)
+        storageMapFloatArray["gen_isValid"][0] = -1.0;
+    else 
+        storageMapFloatArray["gen_isValid"][0] =  1.0;
+
+
+}
+
 
 void TrippleHTag::addAK4JetBranches()
 {
