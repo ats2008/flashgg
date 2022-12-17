@@ -478,8 +478,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                    {//jets are ordered in pt
 
                     auto jet = jets->ptrAt(ijet);
-                    //if (jet->pt()<minJetPt_ || fabs(jet->eta())>maxJetEta_)continue;
-                    if (jet->pt() < 15.0 ) continue;
+                    if (jet->pt()<minJetPt_ || fabs(jet->eta())>maxJetEta_)continue;
 
                     double btag=0.;
                     for (unsigned int btag_num=0; btag_num<bTagType_.size(); btag_num++)
