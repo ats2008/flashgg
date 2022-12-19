@@ -281,6 +281,9 @@ void TrippleHTag::addAK4JetBranches()
        storageMapFloatArray["jet_csvScore"]   = new Float_t[N_JET_MAX];
        storageMapFloatArray["jet_deepCSVScore"]    = new Float_t[N_JET_MAX];
        storageMapFloatArray["jet_deepJetScore"]    = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_deepJetScore_b"]    = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_deepJetScore_bb"]    = new Float_t[N_JET_MAX];
+       storageMapFloatArray["jet_deepJetScore_lepb"]    = new Float_t[N_JET_MAX];
        storageMapFloatArray["jet_particleNetAK4_B"]  = new Float_t[N_JET_MAX];
        storageMapFloatArray["jet_particleNetAK4_CvsL"]  = new Float_t[N_JET_MAX];
        storageMapFloatArray["jet_particleNetAK4_CvsB"]  = new Float_t[N_JET_MAX];
@@ -332,6 +335,9 @@ void TrippleHTag::addAK4JetDetails( const std::vector<edm::Ptr<flashgg::Jet> > j
             storageMapFloatArray["jet_csvScore"][idx]  = 0.0 ;
             storageMapFloatArray["jet_deepCSVScore"][idx]   = 0.0 ;
             storageMapFloatArray["jet_deepJetScore"][idx]   = 0.0 ;
+            storageMapFloatArray["jet_deepJetScore_b"][idx]   = 0.0 ;
+            storageMapFloatArray["jet_deepJetScore_bb"][idx]   = 0.0 ;
+            storageMapFloatArray["jet_deepJetScore_lepb"][idx]   = 0.0 ;
             storageMapFloatArray["jet_particleNetAK4_B"][idx] = 0.0 ;
             storageMapFloatArray["jet_particleNetAK4_CvsL"][idx] = 0.0 ;
             storageMapFloatArray["jet_particleNetAK4_CvsB"][idx] = 0.0 ;
@@ -365,14 +371,23 @@ void TrippleHTag::addAK4JetDetails( const std::vector<edm::Ptr<flashgg::Jet> > j
             storageMapFloatArray["jet_mass"][idx]         = recJet->mass();
             storageMapFloatArray["jet_csvScore"][idx]  = recJet->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
             storageMapFloatArray["jet_deepCSVScore"][idx]   = recJet->bDiscriminator("pfDeepCSVJetTags:probb") + recJet->bDiscriminator("pfDeepCSVJetTags:probbb");
-            storageMapFloatArray["jet_deepJetScore"][idx]   = recJet->bDiscriminator("pfDeepFlavourJetTags:probb")+
-                                                                     recJet->bDiscriminator("pfDeepFlavourJetTags:probbb")+
-                                                                     recJet->bDiscriminator("pfDeepFlavourJetTags:problepb");
-            storageMapFloatArray["jet_particleNetAK4_B"][idx] = pt>15?recJet->bDiscriminator("pfParticleNetAK4DiscriminatorsJetTags:BvsAll"):-1 ;
-            storageMapFloatArray["jet_particleNetAK4_CvsL"][idx] = pt > 15 ? recJet->bDiscriminator("pfParticleNetAK4DiscriminatorsJetTags:CvsL"):-1 ; 
-            storageMapFloatArray["jet_particleNetAK4_CvsB"][idx] = pt > 15 ? recJet->bDiscriminator("pfParticleNetAK4DiscriminatorsJetTags:CvsB"):-1 ; 
-            storageMapFloatArray["jet_particleNetAK4_QvsG"][idx] = pt > 15 ? recJet->bDiscriminator("pfParticleNetAK4DiscriminatorsJetTags:QvsG"):-1 ; 
-            storageMapFloatArray["jet_particleNetAK4_puIdDisc"][idx] = pt > 15 ? 1-recJet->bDiscriminator("pfParticleNetAK4JetTags:probpu"):-1 ; 
+            storageMapFloatArray["jet_deepJetScore"][idx]   = recJet->bDiscriminator("mini_pfDeepFlavourJetTags:probb")+
+                                                              recJet->bDiscriminator("mini_pfDeepFlavourJetTags:probbb")+
+                                                              recJet->bDiscriminator("mini_pfDeepFlavourJetTags:problepb");
+
+            storageMapFloatArray["jet_deepJetScore_b"][idx]    = recJet->bDiscriminator("mini_pfDeepFlavourJetTags:probb")   ;
+            storageMapFloatArray["jet_deepJetScore_bb"][idx]    = recJet->bDiscriminator("mini_pfDeepFlavourJetTags:probbb")  ;
+            storageMapFloatArray["jet_deepJetScore_lepb"][idx]    = recJet->bDiscriminator("mini_pfDeepFlavourJetTags:problepb");
+
+ //           std::cout<<"deepJets : "<<recJet->bDiscriminator("mini_pfDeepFlavourJetTags:probb")<<" | "
+ //                                   <<recJet->bDiscriminator("mini_pfDeepFlavourJetTags:probbb")<<"  | "
+ //                                   <<recJet->bDiscriminator("mini_pfDeepFlavourJetTags:problepb") << " | "
+ //                                   <<std::endl;
+            storageMapFloatArray["jet_particleNetAK4_B"][idx]    = pt>15   ? recJet->bDiscriminator("mini_pfParticleNetAK4DiscriminatorsJetTags:BvsAll"):-1 ;
+            storageMapFloatArray["jet_particleNetAK4_CvsL"][idx] = pt > 15 ? recJet->bDiscriminator("mini_pfParticleNetAK4DiscriminatorsJetTags:CvsL"):-1 ; 
+            storageMapFloatArray["jet_particleNetAK4_CvsB"][idx] = pt > 15 ? recJet->bDiscriminator("mini_pfParticleNetAK4DiscriminatorsJetTags:CvsB"):-1 ; 
+            storageMapFloatArray["jet_particleNetAK4_QvsG"][idx] = pt > 15 ? recJet->bDiscriminator("mini_pfParticleNetAK4DiscriminatorsJetTags:QvsG"):-1 ; 
+            storageMapFloatArray["jet_particleNetAK4_puIdDisc"][idx] = pt > 15 ? 1-recJet->bDiscriminator("mini_pfParticleNetAK4JetTags:probpu"):-1 ; 
 
             storageMapFloatArray["jet_flavour"][idx]        = recJet->hadronFlavour() ;
             storageMapFloatArray["jet_pFlavour"][idx]       = recJet->partonFlavour();

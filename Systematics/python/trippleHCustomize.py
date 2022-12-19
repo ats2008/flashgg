@@ -204,7 +204,11 @@ class TrippleHCustomize():
             varsToGet=["jet_isValid","jet_pt",
                         "jet_eta","jet_phi",
                         "jet_mass","jet_csvScore",
-                        "jet_deepCSVScore","jet_deepJetScore",
+                        "jet_deepCSVScore","jet_deepCSVScore",
+                        "jet_deepJetScore","jet_deepJetScore",
+                        "jet_deepJetScore_b","jet_deepJetScore_b",
+                        "jet_deepJetScore_bb","jet_deepJetScore_bb",
+                        "jet_deepJetScore_lepb","jet_deepJetScore_lepb",
                         "jet_particleNetAK4_B","jet_particleNetAK4_CvsL",
                         "jet_particleNetAK4_CvsB","jet_particleNetAK4_QvsG",
                         "jet_particleNetAK4_puIdDisc","jet_flavour",
@@ -215,7 +219,7 @@ class TrippleHCustomize():
             jetVarList=[]
             for jetVar in varsToGet:
                 for i in range(njetMax):
-                    jetVarList.append( jetVar.replace('_','_'+str(i)+'_')+' := getAK4JetDetails("'+jetVar+'" , '+ str(i) +' )' )
+                    jetVarList.append( jetVar.replace('jet_','jet_'+str(i)+'_')+' := getAK4JetDetails("'+jetVar+'" , '+ str(i) +' )' )
             variables += jetVarList
             print(jetVarList)
 
