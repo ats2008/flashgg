@@ -312,7 +312,11 @@ if options.createCrabConfig:
             ("RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1", "Summer16"),
             ("RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1", "Autumn18"),
             ("RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3", "Summer16"),
-            ("RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15", "Fall18")
+            ("RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15", "Fall18"),
+            ("RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2","UL16PreVFP"),
+            ("RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2","UL16PostVFP"),
+            ("RunIISummer20UL17MiniAODv2-106X_mc2017_realistic_v9-v2","UL17"),
+            ("RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2","UL18")
         ]
 
         for orig, replacement in replacements:
@@ -323,7 +327,10 @@ if options.createCrabConfig:
         if len(jobname) > 97:
             print orig_jobname
             print "-->", len(jobname), jobname
-            raise Exception,"jobname remains too long, additional hacks needed in prepareCrabJobs.py"
+        #    jobname=jobname.replace("_0_0-449-g3229a662_","").replace("c3_0_d4_0","SM").replace("TuneCP5_13TeV-amcatnlo-pythia8_","")
+        #    print("New job Name  : ",jobname)
+        #if len(jobname) > 97:
+        #    raise Exception,"jobname remains too long, additional hacks needed in prepareCrabJobs.py"
         #if len(jobname) > 97:
         #    print "jobname length: %d " % len(jobname)
         #    jobname = jobname[:97]

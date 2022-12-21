@@ -138,6 +138,11 @@ class JobConfig(object):
                                VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                                VarParsing.VarParsing.varType.string,          # string, int, or float
                                "processType")
+        self.options.register ('samplePU',
+                               "", # default value
+                               VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                               VarParsing.VarParsing.varType.string,          # string, int, or float
+                               "samplePU")
         self.options.register ('puTarget',
                                "", # default value
                                VarParsing.VarParsing.multiplicity.singleton, # singleton or list
@@ -349,8 +354,9 @@ class JobConfig(object):
                             puObj = obj
                         elif hasattr(obj,"globalVariables") and hasattr(obj.globalVariables,"puReWeight"):
                             puObj = obj.globalVariables
+                        print("samplepu : ",samplepu)
                         if puObj:
-                            if not samplepu:
+                            if not self.samplePU:
 #                                print dsetname
 #                                print self.pu_distribs.keys()
 #                                hack2017 = True
@@ -385,7 +391,8 @@ class JobConfig(object):
                                                         ( ",".join(self.pu_distribs.keys()), ",".join(matches), dsetname ) )
                                 # if self.options.PUyear=="2017": samplepu = self.pu_distribs_hack_2017[matches[0]]
                                 # else :
-                            samplepu = self.pu_distribs[matches[0]]
+                                self.samplePU=matches[0]
+                            samplepu = self.pu_distribs[self.samplePU]
                             puObj.puReWeight = True
                             puObj.puBins = cms.vdouble( map(float, samplepu.probFunctionVariable) )
                             puObj.mcPu   = samplepu.probValue
