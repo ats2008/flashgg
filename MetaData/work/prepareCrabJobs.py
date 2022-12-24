@@ -328,7 +328,10 @@ if options.createCrabConfig:
         if len(jobname) > 97:
             print orig_jobname
             print "-->", len(jobname), jobname
-            raise Exception,"jobname remains too long, additional hacks needed in prepareCrabJobs.py"
+        #    jobname=jobname.replace("_0_0-449-g3229a662_","").replace("c3_0_d4_0","SM").replace("TuneCP5_13TeV-amcatnlo-pythia8_","")
+        #    print("New job Name  : ",jobname)
+        #if len(jobname) > 97:
+        #    raise Exception,"jobname remains too long, additional hacks needed in prepareCrabJobs.py"
         #if len(jobname) > 97:
         #    print "jobname length: %d " % len(jobname)
         #    jobname = jobname[:97]

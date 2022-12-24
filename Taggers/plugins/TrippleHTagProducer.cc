@@ -492,6 +492,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                         if( JetIDLevel_ == "Tight2017" && !jet->passesJetID  ( flashgg::Tight2017 ) ) continue;
                         if( JetIDLevel_ == "Tight2018" && !jet->passesJetID  ( flashgg::Tight2018 ) ) continue;
                     }
+
                     if( reco::deltaR( *jet, *(dipho->leadingPhoton()) ) < vetoConeSize_ || reco::deltaR( *jet, *(dipho->subLeadingPhoton()) ) < vetoConeSize_ ) {
                     continue;
                     }*/
@@ -513,8 +514,9 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 auto idx3=sortedIndexByBJetScore[2];
                 auto idx4=sortedIndexByBJetScore[3];
                 
-                vector<float> dhh(3);
+                // ------------  All HH pairing possibilities and getting dhh[i]-------------- //
                 
+                vector<float> dhh(3);
                 TLorentzVector m1P4[3],m2P4[3];
                 
                 auto lv1 = cleaned_jets[idx1]->p4()+cleaned_jets[idx2]->p4();
@@ -553,7 +555,9 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     m1P4[2].SetPtEtaPhiE( lv2.Pt(), lv2.Eta(), lv2.Phi() , lv2.E() ) ;
                 }
                 dhh[2] = abs(m1P4[2].M() - a* m2P4[2].M())/b ;
+                
 
+                // -------------------------------------------------------------- //
                 auto sortedDhhIdx= argsort(dhh);
                 auto minDhhIdx=sortedDhhIdx[0];
                 auto nextMinDhhIdx=sortedDhhIdx[1];

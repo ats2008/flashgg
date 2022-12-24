@@ -11,7 +11,6 @@ from flashgg.Taggers.flashggDoubleHReweight_cfi import flashggDoubleHReweight
 from flashgg.MicroAOD.flashggJets_cfi import  maxJetCollections
 from flashgg.Taggers.flashggTags_cff import flashggTTHLeptonicTag
 
-
 jetID = ''
 weightsFile=""# path to TMVA weights
 MVAscalingValue=1.#scale MVA output before the cumulative transformation for 2017(2016 kept unchanged for simplicity, we will probably change that once we have all 3 years.)
@@ -42,7 +41,7 @@ flashggTrippleHTag = cms.EDProducer("FlashggTrippleHTagProducer",
                                    PhotonIDCut = cms.double(0.2),#this is loose id for 2016
                                    PhotonElectronVeto =cms.untracked.vint32(1, 1), #0: Pho1, 1: Pho2
 
-                                   MinJetPt   = cms.double(25.),
+                                   MinJetPt   = cms.double(20.),
                                    MaxJetEta   = cms.double(MaxJetEta),
                                    MJJBoundaries = cms.vdouble(0.,9999.),
                                    #BTagType = cms.vstring('pfDeepCSVJetTags:probb','pfDeepCSVJetTags:probbb'), #string for btag algorithm
