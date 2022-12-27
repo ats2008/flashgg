@@ -354,7 +354,6 @@ class JobConfig(object):
                             puObj = obj
                         elif hasattr(obj,"globalVariables") and hasattr(obj.globalVariables,"puReWeight"):
                             puObj = obj.globalVariables
-                        print("samplepu : ",samplepu)
                         if puObj:
                             if not self.samplePU:
 #                                print dsetname

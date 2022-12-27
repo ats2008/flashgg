@@ -43,7 +43,7 @@ customize.options.register('doubleHTagsOnly',
                            'doubleHTagsOnly'
                            )
 customize.options.register('doHHHGen',
-                           True,
+                           False,
                            VarParsing.VarParsing.multiplicity.singleton,
                            VarParsing.VarParsing.varType.bool,
                            'doTrippleHTag'
@@ -299,6 +299,7 @@ if customize.doTrippleHTag:
     print(customize) 
     hhhc = flashgg.Systematics.trippleHCustomize.TrippleHCustomize(process, customize, customize.metaConditions)
     minimalVariables += hhhc.variablesToDump()
+    minimalNonSignalVariables +=hhhc.variablesToDump() 
     systematicVariables = hhhc.systematicVariables()
 
 
@@ -425,13 +426,13 @@ else:
 
 if customize.doubleHTagsOnly:
     variablesToUse = minimalVariables
-   # if customize.processId == "Data":
-   #     variablesToUse = minimalNonSignalVariables
+    if customize.processId == "Data":
+        variablesToUse = minimalNonSignalVariables
   
 if customize.trippleHTagsOnly:
     variablesToUse = minimalVariables
-   # if customize.processId == "Data":
-   #     variablesToUse = minimalNonSignalVariables
+    if customize.processId == "Data":
+        variablesToUse = minimalNonSignalVariables
   
 if customize.doDoubleHTag:
    systlabels,jetsystlabels,metsystlabels = hhc.customizeSystematics(systlabels,jetsystlabels,metsystlabels)
@@ -466,7 +467,6 @@ from flashgg.MetaData.samples_utils import SamplesManager
 
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring(
-                                 "file:/grid_mnt/t3storage3/athachay/trippleHiggs/hhhTo4b2g/flashgg/CMSSW_10_6_29/MicroAODProduction/results/mc/v1p3/c3_1_c4_1_HHHto4b2gamma_FS/c3_1_c4_1_FS_0.root"
                              ))
 
 process.TFileService = cms.Service("TFileService",
