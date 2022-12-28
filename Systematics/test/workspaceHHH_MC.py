@@ -36,17 +36,17 @@ customize.options.register('tthTagsOnly',
                            VarParsing.VarParsing.varType.bool,
                            'tthTagsOnly'
                            )
+customize.options.register('doHHHGen',
+                           False,
+                           VarParsing.VarParsing.multiplicity.singleton,
+                           VarParsing.VarParsing.varType.bool,
+                           'doHHHGen'
+                           )
 customize.options.register('doubleHTagsOnly',
                            False,
                            VarParsing.VarParsing.multiplicity.singleton,
                            VarParsing.VarParsing.varType.bool,
                            'doubleHTagsOnly'
-                           )
-customize.options.register('doHHHGen',
-                           False,
-                           VarParsing.VarParsing.multiplicity.singleton,
-                           VarParsing.VarParsing.varType.bool,
-                           'doTrippleHTag'
                            )
 customize.options.register('trippleHTagsOnly',
                            True,
