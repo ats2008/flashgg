@@ -223,6 +223,7 @@ customize.options.register('applyNNLOPSweight',
                            VarParsing.VarParsing.varType.bool,
                            'applyNNLOPSweight'
                            )
+    
 
 
 print "Printing defaults"
@@ -235,6 +236,9 @@ customize.setDefault("maxEvents",-1)
 customize.setDefault("targetLumi",1.00e+3)
 customize.parse()
 customize.metaConditions = MetaConditionsReader(customize.metaConditions)
+
+if customize.processId == "sig" or customize.processId.lower()=='signal':
+    customize.doHHHGen = True
 
 ### Global Tag
 from Configuration.AlCa.GlobalTag import GlobalTag
