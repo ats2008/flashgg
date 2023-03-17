@@ -3,6 +3,7 @@
         "bkg" : [
                 "/TTGG_0Jets_TuneCP5_13TeV_amcatnlo_madspin_pythia8",
                 "/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8",
+                "/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8",
                 "/GluGluToHHTo2B2G_node_cHHH1_TuneCP5_PSWeights_13TeV-powheg-pythia8",
                 "/VBFHHTo2B2G_CV_1_C2V_1_C3_1_dipoleRecoilOn-TuneCP5_PSweights_13TeV-madgraph-pythia8"
         ]

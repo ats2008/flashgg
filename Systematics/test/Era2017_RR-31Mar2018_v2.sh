@@ -1,7 +1,8 @@
 fggRunJobs.py \
     workspaceHHH_MC.py \
 	--load Era2017_RR-31Mar2018_v2.json \
-    -d jobs_Era2017_RR-31Mar2018_v2 \
+    --no-use-tarball \
+    -d jobs_Era2017_RR-31Mar2018_v2_p0 \
     maxEvents=-1  \
     -n 300 \
     -q workday \
