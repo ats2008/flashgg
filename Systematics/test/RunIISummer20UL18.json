@@ -1,8 +1,6 @@
 {
     "processes" : {
         "bkg" : [
-            "/DiPhotonJetsBox1BJet_MGG-80toInf_13TeV-sherpa" ,     
-            "/DiPhotonJetsBox2BJets_MGG-80toInf_13TeV-sherpa",     
             "/DiPhotonJetsBox_MGG-80toInf_13TeV-sherpa"           
         ],
         "Data" : [

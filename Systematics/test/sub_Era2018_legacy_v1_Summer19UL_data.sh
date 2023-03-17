@@ -6,4 +6,4 @@ fggRunJobs.py \
     -n 400 \
     -q workday \
 	--no-copy-proxy \
-	--stage-to=/eos/home-a/athachay/workarea/trippleHiggs/flashggNtuples/v3/Era2018_legacy_v1_Summer19_data_v3p1
+	--stage-to=/eos/home-a/athachay/workarea/trippleHiggs/flashggNtuples/v3/Era2018_legacy_v1_Summer19_data_v3p2

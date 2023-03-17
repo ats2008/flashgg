@@ -354,7 +354,7 @@ bool TrippleHTagProducer::isclose(double a, double b, double rel_tol=1e-09, doub
 
 void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
 {
-
+    
     // update global variables
     globalVariablesComputer_.update(evt);
 
