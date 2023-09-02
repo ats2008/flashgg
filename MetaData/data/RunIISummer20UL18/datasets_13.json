@@ -818,8 +818,11 @@
                 "name": "/store/group/phys_higgs/cmshgg/rasharma/flashgg/RunIISummer20UL18/legacyRunII/DiPhotonJets_MGG-80toInf_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL18-legacyRunII-v0-RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v1/220517_230611/0000/myMicroAODOutputFile_97.root", 
                 "nevents": 21961
             }
+        ],
+        "parent_n_units": null, 
+        "vetted": false
       },
-=======
+
     "/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/phys_higgs-RunIISummer20UL18-legacyRunII-v0-RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1_ext1-v1-2ad4de5fa8623fb9d681831b47cf9fee/USER": {
         "dset_type": "mc", 
         "files": [

@@ -48,6 +48,19 @@ customize.options.register('doHHHGen',
                            VarParsing.VarParsing.varType.bool,
                            'doTrippleHTag'
                            )
+customize.options.register('minNGoodJets',
+                           4,
+                           VarParsing.VarParsing.multiplicity.singleton,
+                           VarParsing.VarParsing.varType.int,
+                           'minNGoodJets'
+                           )
+customize.options.register('doPromptGen',
+                           False,
+                           VarParsing.VarParsing.multiplicity.singleton,
+                           VarParsing.VarParsing.varType.bool,
+                           'doPromptGen'
+                           )
+                        
 customize.options.register('trippleHTagsOnly',
                            True,
                            VarParsing.VarParsing.multiplicity.singleton,

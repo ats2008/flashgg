@@ -81,7 +81,10 @@ private:
     vector<double>mjjBoundariesUpper_;
     vector<std::string> bTagType_;
     bool doHHHGen;
+    bool doPromptGen;
+    int minNGoodJets;
     bool       useJetID_;
+
     string     JetIDLevel_;
     EDGetTokenT<View<flashgg::Met> > MET_;
     EDGetTokenT<View<reco::Vertex> > vtxToken_;
@@ -153,6 +156,8 @@ TrippleHTagProducer::TrippleHTagProducer( const ParameterSet &iConfig ) :
     maxJetEta_( iConfig.getParameter<double> ( "MaxJetEta" ) ),
     bTagType_( iConfig.getParameter<vector<std::string>>( "BTagType") ),
     doHHHGen( iConfig.getParameter<bool>   ( "doHHHGen"     ) ),
+    doPromptGen( iConfig.getParameter<bool>   ( "doPromptGen"     ) ),
+    minNGoodJets( iConfig.getParameter<int>   ( "minNGoodJets"     ) ),
     useJetID_( iConfig.getParameter<bool>   ( "UseJetID"     ) ),
     JetIDLevel_( iConfig.getParameter<string> ( "JetIDLevel"   ) ),
     MET_(consumes<View<flashgg::Met> >( iConfig.getParameter<InputTag> ("METTag") ) ),
@@ -475,7 +480,8 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 std::vector<edm::Ptr<flashgg::Jet> > cleaned_jets;
                 std::vector<float> cleaned_jets_btagScore;
                 for( size_t ijet=0; ijet < jets->size(); ++ijet ) 
-                   {//jets are ordered in pt
+                   {
+                     // jets are ordered in pt
 
                     auto jet = jets->ptrAt(ijet);
                     if (jet->pt()<minJetPt_ || fabs(jet->eta())>maxJetEta_)continue;
@@ -498,17 +504,34 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     }*/
                         cleaned_jets.push_back( jet );
                         cleaned_jets_btagScore.push_back(-1.0*btag);
-                }
+                   }
                 
                 // TODO : TODO : TODO : Need to mask this condition
+                int nGoodJets= cleaned_jets.size();
+//                std::cout<<"nGoodJets = "<<nGoodJets<<"\n";           
+                if( cleaned_jets.size() < 1 ) {  continue;}
 
-                if( cleaned_jets.size() < 4 ) {
-                    continue;
-                }
+                if( int(cleaned_jets.size()) < minNGoodJets ) { continue; }
                 
+
                 //dijet selection. Do pair according to pt and choose the pair with highest b-tag
+                if (cleaned_jets.size() < 2) {
+                       cleaned_jets.push_back( cleaned_jets[0] );
+                       cleaned_jets_btagScore.push_back( -1.0 ) ;
+                }
+
+                if (cleaned_jets.size() < 3) {
+                       cleaned_jets.push_back( cleaned_jets[1] );
+                       cleaned_jets_btagScore.push_back( -1.0 ) ;
+                }
+
+                if (cleaned_jets.size() < 4) {
+                       cleaned_jets.push_back( cleaned_jets[2] );
+                       cleaned_jets_btagScore.push_back( -1.0 ) ;
+                }
+
                 auto sortedIndexByBJetScore = argsort(cleaned_jets_btagScore);
-                
+                        
                 auto idx1=sortedIndexByBJetScore[0];
                 auto idx2=sortedIndexByBJetScore[1];
                 auto idx3=sortedIndexByBJetScore[2];
@@ -608,13 +631,15 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
               
 
                 // prepare tag object
-                TrippleHTag tag_obj( dipho, jet1,jet2,jet3,jet4 );
+                TrippleHTag tag_obj( dipho, jet1,jet2,jet3,jet4 , nGoodJets);
                 tag_obj.addAK4JetDetails(cleaned_jets);
-                if(  doHHHGen  and ! evt.isRealData() )
+            //    std::cout<<doPromptGen<<" | "<<doHHHGen<<" | "<<evt.isRealData()<<"\n";
+                if(  doPromptGen or doHHHGen  and ( ! evt.isRealData()) )
                 {
                     edm::Handle<edm::View<reco::GenParticle>> pruned;
                     evt.getByToken(genParticleToken_, pruned);
-                    tag_obj.fillHHHGenDetails(pruned);
+                    if(doHHHGen)    tag_obj.fillHHHGenDetails(pruned);
+                    if(doPromptGen) tag_obj.fillPromptGenDetails(pruned);
                 }
 
                 //tag_obj.addAK8JetDetails(ak8_jets);

@@ -20,7 +20,7 @@ namespace flashgg {
         TrippleHTag();
         ~TrippleHTag();
 
-        TrippleHTag( edm::Ptr<DiPhotonCandidate>, edm::Ptr<flashgg::Jet>, edm::Ptr<flashgg::Jet>,edm::Ptr<flashgg::Jet>, edm::Ptr<flashgg::Jet>  );
+        TrippleHTag( edm::Ptr<DiPhotonCandidate>, edm::Ptr<flashgg::Jet>, edm::Ptr<flashgg::Jet>,edm::Ptr<flashgg::Jet>, edm::Ptr<flashgg::Jet> , int nGoodJets=4);
         virtual TrippleHTag *clone() const override;
         
         float ttHScore_;
@@ -130,7 +130,9 @@ namespace flashgg {
         void fillGenPrticle(TString tag, const reco::Candidate* particle);
         void fillGenPrticle(TString tag, const reco::GenParticle &particle);
         void fillHHHGenDetails( edm::Handle<edm::View<reco::GenParticle>> pruned  );
+        void fillPromptGenDetails( edm::Handle<edm::View<reco::GenParticle>> pruned  );
         float getGenDetails( std::string item_) const;
+        float getNGoodJets( ) const {  return nGoodJets ; }  ;
 
     private:
         double mva_, MX_, genMhhh_,genCosThetaStar_CS_;
@@ -149,6 +151,8 @@ namespace flashgg {
         DecorrTransform* transfEBEB_;
         DecorrTransform* transfNotEBEB_;
         float dHH;
+
+        float nGoodJets;
         
     };
 }

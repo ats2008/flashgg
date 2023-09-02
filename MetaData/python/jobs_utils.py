@@ -256,6 +256,7 @@ class JobsManager(object):
         
 
         args.append("processIdMap=%s/config.json" % os.path.abspath(options.outputDir))
+        #args.append("%s/config.json" % os.path.abspath(options.outputDir))
 
         pset = args[0] if not options.jobExe else args[1]
         with open(pset,"r") as pin:

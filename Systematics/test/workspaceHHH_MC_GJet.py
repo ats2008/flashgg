@@ -43,7 +43,7 @@ customize.options.register('doHHHGen',
                            'doHHHGen'
                            )
 customize.options.register('minNGoodJets',
-                           -1,
+                           1,
                            VarParsing.VarParsing.multiplicity.singleton,
                            VarParsing.VarParsing.varType.int,
                            'minNGoodJets'
