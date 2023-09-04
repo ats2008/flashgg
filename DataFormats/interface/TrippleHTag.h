@@ -4,13 +4,14 @@
 #include "TLorentzVector.h"
 
 #include "flashgg/DataFormats/interface/DiPhotonTagBase.h"
+#include "DataFormats/JetReco/interface/GenJet.h"
 #include "flashgg/DataFormats/interface/Jet.h"
 #include "DataFormats/Candidate/interface/LeafCandidate.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
 #include "flashgg/Taggers/interface/FunctionHelpers.h"
 
-#define N_JET_MAX 8
+#define N_JET_MAX 13
 
 namespace flashgg {
 
@@ -123,6 +124,8 @@ namespace flashgg {
         float year() const {return year_;}
         
         void addAK4JetBranches();
+        void fillGenJets(const edm::Handle<edm::View<reco::GenJet>> genJets ) ;
+        float getGenJDetails(  std::string item ,  Int_t idx) const  ;
         void addAK4JetDetails( const std::vector<edm::Ptr<flashgg::Jet> > jets  );
         float getAK4JetDetails(  std::string item ,  Int_t idx) const  ;
 

@@ -43,7 +43,7 @@ flashggTrippleHTag = cms.EDProducer("FlashggTrippleHTagProducer",
                                    PhotonIDCut = cms.double(0.2),#this is loose id for 2016
                                    PhotonElectronVeto =cms.untracked.vint32(1, 1), #0: Pho1, 1: Pho2
 
-                                   MinJetPt   = cms.double(20.),
+                                   MinJetPt   = cms.double(12.),
                                    MaxJetEta   = cms.double(MaxJetEta),
                                    MJJBoundaries = cms.vdouble(0.,9999.),
                                    #BTagType = cms.vstring('pfDeepCSVJetTags:probb','pfDeepCSVJetTags:probbb'), #string for btag algorithm

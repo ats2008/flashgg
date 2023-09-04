@@ -216,7 +216,7 @@ class TrippleHCustomize():
 
 
             ##  Adding all jet information
-            njetMax=8
+            njetMax=13
             varsToGet=["jet_isValid","jet_pt",
                         "jet_eta","jet_phi",
                         "jet_mass","jet_csvScore",

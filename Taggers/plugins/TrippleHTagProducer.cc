@@ -58,6 +58,7 @@ private:
     std::vector<edm::EDGetTokenT<edm::View<DiPhotonCandidate> > > diPhotonTokens_;
 
     EDGetTokenT<View<reco::GenParticle> > genParticleToken_;
+    EDGetTokenT<View<reco::GenJet> >           genJetToken_;
 
     std::vector< std::string > systematicsLabels;
     std::map<std::string, float> ttHVars;
@@ -82,6 +83,7 @@ private:
     vector<std::string> bTagType_;
     bool doHHHGen;
     bool doPromptGen;
+    bool doGenJets;
     int minNGoodJets;
     bool       useJetID_;
 
@@ -148,6 +150,7 @@ private:
 TrippleHTagProducer::TrippleHTagProducer( const ParameterSet &iConfig ) :
     //  diPhotonToken_( consumes<View<flashgg::DiPhotonCandidate> >( iConfig.getParameter<InputTag> ( "DiPhotonTag" ) ) ),
     genParticleToken_( consumes<View<reco::GenParticle> >( iConfig.getParameter<InputTag> ( "GenParticleTag" ) ) ),
+    genJetToken_ ( consumes<View<reco::GenJet> >( iConfig.getParameter<InputTag> ( "GenJetTag" ) ) ),
     minLeadPhoPt_( iConfig.getParameter<double> ( "MinLeadPhoPt" ) ),
     minSubleadPhoPt_( iConfig.getParameter<double> ( "MinSubleadPhoPt" ) ),
     scalingPtCuts_( iConfig.getParameter<bool> ( "ScalingPtCuts" ) ),
@@ -157,6 +160,7 @@ TrippleHTagProducer::TrippleHTagProducer( const ParameterSet &iConfig ) :
     bTagType_( iConfig.getParameter<vector<std::string>>( "BTagType") ),
     doHHHGen( iConfig.getParameter<bool>   ( "doHHHGen"     ) ),
     doPromptGen( iConfig.getParameter<bool>   ( "doPromptGen"     ) ),
+    doGenJets( iConfig.getParameter<bool>   ( "doGenJets"     ) ),
     minNGoodJets( iConfig.getParameter<int>   ( "minNGoodJets"     ) ),
     useJetID_( iConfig.getParameter<bool>   ( "UseJetID"     ) ),
     JetIDLevel_( iConfig.getParameter<string> ( "JetIDLevel"   ) ),
@@ -383,11 +387,15 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
     TagTruthBase truth_obj;
     double genMhhh=0.;
     double genCosThetaStar_CS=0.;
+    Handle<View<reco::GenJet> > genJets;
     if( ! evt.isRealData() ) {
         Handle<View<reco::GenParticle> > genParticles;
         std::vector<edm::Ptr<reco::GenParticle> > selHiggses;
+        
         evt.getByToken( genParticleToken_, genParticles );
-        for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
+        evt.getByToken( genJetToken_, genJets );
+       
+       for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
             edm::Ptr<reco::GenParticle> genPar = genParticles->ptrAt(genLoop);
             if (selHiggses.size()>1) break;
             if (genPar->pdgId()==25 && genPar->isHardProcess()) {
@@ -640,6 +648,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     evt.getByToken(genParticleToken_, pruned);
                     if(doHHHGen)    tag_obj.fillHHHGenDetails(pruned);
                     if(doPromptGen) tag_obj.fillPromptGenDetails(pruned);
+                    if(doGenJets)    tag_obj.fillGenJets(genJets);
                 }
 
                 //tag_obj.addAK8JetDetails(ak8_jets);
