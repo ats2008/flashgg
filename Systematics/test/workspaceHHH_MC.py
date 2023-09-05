@@ -42,6 +42,18 @@ customize.options.register('doHHHGen',
                            VarParsing.VarParsing.varType.bool,
                            'doHHHGen'
                            )
+customize.options.register('minNGoodJets',
+                           -1,
+                           VarParsing.VarParsing.multiplicity.singleton,
+                           VarParsing.VarParsing.varType.int,
+                           'minNGoodJets'
+                           )
+customize.options.register('doPromptGen',
+                           True,
+                           VarParsing.VarParsing.multiplicity.singleton,
+                           VarParsing.VarParsing.varType.bool,
+                           'doPromptGen'
+                           )
 customize.options.register('doubleHTagsOnly',
                            False,
                            VarParsing.VarParsing.multiplicity.singleton,
@@ -299,7 +311,6 @@ if customize.doDoubleHTag:
 
 if customize.doTrippleHTag:
     import flashgg.Systematics.trippleHCustomize
-    print("Hey there I am using whatsapp")
     print(customize) 
     hhhc = flashgg.Systematics.trippleHCustomize.TrippleHCustomize(process, customize, customize.metaConditions)
     minimalVariables += hhhc.variablesToDump()
@@ -315,8 +326,8 @@ if customize.doStageOne:
 
 process.flashggTHQLeptonicTag.processId = cms.string(str(customize.processId))
 
-print 'here we print the tag sequence after'
-print process.flashggTagSequence
+#print 'here we print the tag sequence after'
+#print process.flashggTagSequence
 
 if customize.tthTagsOnly:
     process.flashggTagSorter.TagPriorityRanges = cms.VPSet(   
@@ -517,17 +528,17 @@ elif customize.doStageOne:
     tagList = soc.tagList
 else:
     tagList=[
-        ["NoTag",0],
-        ["UntaggedTag",4],
-        ["VBFTag",3],
-        ["ZHLeptonicTag",2],
-        ["WHLeptonicTag",6],
-        ["VHMetTag",2],
-        ["VHHadronicTag",0],
-        ["TTHHadronicTag",4],
-        ["TTHLeptonicTag",4],
-        ["THQLeptonicTag",0],
-        ["TTHDiLeptonTag",0]
+           ["NoTag",0],
+           ["UntaggedTag",4],
+           ["VBFTag",3],
+           ["ZHLeptonicTag",2],
+           ["WHLeptonicTag",6],
+           ["VHMetTag",2],
+           ["VHHadronicTag",0],
+           ["TTHHadronicTag",4],
+           ["TTHLeptonicTag",4],
+           ["THQLeptonicTag",0],
+           ["TTHDiLeptonTag",0]
         ]
 
 definedSysts=set()

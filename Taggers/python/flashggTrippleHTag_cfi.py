@@ -31,6 +31,8 @@ flashggTrippleHTag = cms.EDProducer("FlashggTrippleHTagProducer",
                                    JetsSuffixes = cms.vstring(''), #nominal and systematic variations 
                                    GenParticleTag = cms.InputTag( "flashggPrunedGenParticles" ), # to compute MC-truth info
                                    doHHHGen       = cms.bool(False), 
+                                   doPromptGen       = cms.bool(False), 
+                                   minNGoodJets      = cms.int32(4),
                                    VetoConeSize   = cms.double(0.4),
                                    MinLeadPhoPt   = cms.double(1./3.),
                                    MinSubleadPhoPt   = cms.double(0.25),
@@ -41,7 +43,7 @@ flashggTrippleHTag = cms.EDProducer("FlashggTrippleHTagProducer",
                                    PhotonIDCut = cms.double(0.2),#this is loose id for 2016
                                    PhotonElectronVeto =cms.untracked.vint32(1, 1), #0: Pho1, 1: Pho2
 
-                                   MinJetPt   = cms.double(20.),
+                                   MinJetPt   = cms.double(12.),
                                    MaxJetEta   = cms.double(MaxJetEta),
                                    MJJBoundaries = cms.vdouble(0.,9999.),
                                    #BTagType = cms.vstring('pfDeepCSVJetTags:probb','pfDeepCSVJetTags:probbb'), #string for btag algorithm

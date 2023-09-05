@@ -4,13 +4,14 @@
 #include "TLorentzVector.h"
 
 #include "flashgg/DataFormats/interface/DiPhotonTagBase.h"
+#include "DataFormats/JetReco/interface/GenJet.h"
 #include "flashgg/DataFormats/interface/Jet.h"
 #include "DataFormats/Candidate/interface/LeafCandidate.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
 #include "flashgg/Taggers/interface/FunctionHelpers.h"
 
-#define N_JET_MAX 8
+#define N_JET_MAX 13
 
 namespace flashgg {
 
@@ -20,7 +21,7 @@ namespace flashgg {
         TrippleHTag();
         ~TrippleHTag();
 
-        TrippleHTag( edm::Ptr<DiPhotonCandidate>, edm::Ptr<flashgg::Jet>, edm::Ptr<flashgg::Jet>,edm::Ptr<flashgg::Jet>, edm::Ptr<flashgg::Jet>  );
+        TrippleHTag( edm::Ptr<DiPhotonCandidate>, edm::Ptr<flashgg::Jet>, edm::Ptr<flashgg::Jet>,edm::Ptr<flashgg::Jet>, edm::Ptr<flashgg::Jet> , int nGoodJets=4);
         virtual TrippleHTag *clone() const override;
         
         float ttHScore_;
@@ -123,6 +124,8 @@ namespace flashgg {
         float year() const {return year_;}
         
         void addAK4JetBranches();
+        void fillGenJets(const edm::Handle<edm::View<reco::GenJet>> genJets ) ;
+        float getGenJDetails(  std::string item ,  Int_t idx) const  ;
         void addAK4JetDetails( const std::vector<edm::Ptr<flashgg::Jet> > jets  );
         float getAK4JetDetails(  std::string item ,  Int_t idx) const  ;
 
@@ -130,7 +133,9 @@ namespace flashgg {
         void fillGenPrticle(TString tag, const reco::Candidate* particle);
         void fillGenPrticle(TString tag, const reco::GenParticle &particle);
         void fillHHHGenDetails( edm::Handle<edm::View<reco::GenParticle>> pruned  );
+        void fillPromptGenDetails( edm::Handle<edm::View<reco::GenParticle>> pruned  );
         float getGenDetails( std::string item_) const;
+        float getNGoodJets( ) const {  return nGoodJets ; }  ;
 
     private:
         double mva_, MX_, genMhhh_,genCosThetaStar_CS_;
@@ -149,6 +154,8 @@ namespace flashgg {
         DecorrTransform* transfEBEB_;
         DecorrTransform* transfNotEBEB_;
         float dHH;
+
+        float nGoodJets;
         
     };
 }

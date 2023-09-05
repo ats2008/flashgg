@@ -25,7 +25,9 @@ TrippleHTag::~TrippleHTag() {}
 
 TrippleHTag::TrippleHTag( edm::Ptr<flashgg::DiPhotonCandidate> diPho, 
                           edm::Ptr<flashgg::Jet> h1LeadJet , edm::Ptr<flashgg::Jet> h1SubleadJet ,
-                          edm::Ptr<flashgg::Jet> h2LeadJet , edm::Ptr<flashgg::Jet> h2SubleadJet )
+                          edm::Ptr<flashgg::Jet> h2LeadJet , edm::Ptr<flashgg::Jet> h2SubleadJet ,
+                          int nGoodJetsSelected
+                        )
     : mva_(-.2), 
       MX_(0.),genMhhh_(0.),
       genCosThetaStar_CS_(0.),
@@ -34,6 +36,7 @@ TrippleHTag::TrippleHTag( edm::Ptr<flashgg::DiPhotonCandidate> diPho,
       h2LeadJet_(h2LeadJet), 
       h2SubleadJet_(h2SubleadJet)
 {   
+      nGoodJets=nGoodJetsSelected;
 
     dipho_ = diPho;
     
@@ -77,6 +80,23 @@ TrippleHTag::TrippleHTag( edm::Ptr<flashgg::DiPhotonCandidate> diPho,
     this->setP4( quadjet_ + diPhoton()->p4() );
     addAK4JetBranches();
     addGenObjectBranches();
+    
+    for(TString tag : {"promptG1","promptG2","promptG3","promptG4","promptG5","promptG6"} )
+    {
+      //std::cout<<" setting tag : "<<tag<<" \n";
+      storageMapFloatArray["gen_"+tag+"_pt"][0]= -660.6 ;
+      storageMapFloatArray["gen_"+tag+"_pdgId"][0]= -660.6 ;
+      storageMapFloatArray["gen_"+tag+"_y"][0]= -660.6 ;
+      storageMapFloatArray["gen_"+tag+"_eta"][0]= -660.6 ;
+      storageMapFloatArray["gen_"+tag+"_phi"][0]= -660.6 ;
+      storageMapFloatArray["gen_"+tag+"_e"][0]= -660.6 ;
+      storageMapFloatArray["gen_"+tag+"_numberOfDaughters"][0]= -660.6 ;
+      storageMapFloatArray["gen_"+tag+"_mother" ][0]  = -666.6 ;
+      storageMapFloatArray["gen_"+tag+"_isPromptFS"][0]  = -666.6 ;
+      storageMapFloatArray["gen_"+tag+"_isFHPFS"][0]  = -666.6 ;
+      storageMapFloatArray["gen_"+tag+"_isHard" ][0]  = -666.6 ;
+    }
+
 }
 
 void TrippleHTag::addGenObjectBranches()
@@ -85,14 +105,18 @@ void TrippleHTag::addGenObjectBranches()
     for(TString tag : {"H1","H2","H3"} )
     {
       
-      //std::cout<<" setting tag : "<<tag<<" \n";
-      storageMapFloatArray["gen_"+tag+"_pt"] = new Float_t;
-      storageMapFloatArray["gen_"+tag+"_pdgId"] = new Float_t;
-      storageMapFloatArray["gen_"+tag+"_y"] = new Float_t;
-      storageMapFloatArray["gen_"+tag+"_eta"] = new Float_t;
-      storageMapFloatArray["gen_"+tag+"_phi"] = new Float_t;
-      storageMapFloatArray["gen_"+tag+"_e"] = new Float_t;
-      storageMapFloatArray["gen_"+tag+"_numberOfDaughters"] = new Float_t;
+          //std::cout<<" setting tag : "<<tag<<" \n";
+          storageMapFloatArray["gen_"+tag+"_pt"] = new Float_t;
+          storageMapFloatArray["gen_"+tag+"_pdgId"] = new Float_t;
+          storageMapFloatArray["gen_"+tag+"_y"] = new Float_t;
+          storageMapFloatArray["gen_"+tag+"_eta"] = new Float_t;
+          storageMapFloatArray["gen_"+tag+"_phi"] = new Float_t;
+          storageMapFloatArray["gen_"+tag+"_e"] = new Float_t;
+          storageMapFloatArray["gen_"+tag+"_numberOfDaughters"] = new Float_t;
+          storageMapFloatArray["gen_"+tag+"_mother" ]  = new Float_t ;
+          storageMapFloatArray["gen_"+tag+"_isPromptFS"]  = new Float_t ;
+          storageMapFloatArray["gen_"+tag+"_isFHPFS"]  = new Float_t ;
+          storageMapFloatArray["gen_"+tag+"_isHard" ]  = new Float_t ;
     }
 
     for(TString tag : {"H1_dau1","H2_dau1","H3_dau1","H1_dau2","H2_dau2","H3_dau2"} )
@@ -105,7 +129,49 @@ void TrippleHTag::addGenObjectBranches()
       storageMapFloatArray["gen_"+tag+"_phi"] = new Float_t;
       storageMapFloatArray["gen_"+tag+"_e"] = new Float_t;
       storageMapFloatArray["gen_"+tag+"_numberOfDaughters"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_mother" ]  = new Float_t ;
+      storageMapFloatArray["gen_"+tag+"_isPromptFS"]  = new Float_t ;
+      storageMapFloatArray["gen_"+tag+"_isFHPFS"]  = new Float_t ;
+      storageMapFloatArray["gen_"+tag+"_isHard" ]  = new Float_t ;
     }
+
+    storageMapFloatArray["gen_isValid"] = new Float_t;
+    for(TString tag : {
+                        "promptG1","promptG2","promptG3","promptG4","promptG5","promptG6"
+                      } )
+    {
+      //std::cout<<" setting tag : "<<tag<<" \n";
+      storageMapFloatArray["gen_"+tag+"_pt"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_pdgId"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_y"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_eta"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_phi"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_e"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_numberOfDaughters"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_mother" ]  = new Float_t ;
+      storageMapFloatArray["gen_"+tag+"_isHard" ]  = new Float_t ;
+      storageMapFloatArray["gen_"+tag+"_isPromptFS"]  = new Float_t ;
+      storageMapFloatArray["gen_"+tag+"_isFHPFS"]  = new Float_t ;
+    }
+    
+    for(TString tag : {
+                        "jet1","jet2","jet3","jet4","jet5","jet6","jet7","jet8","jet9","jet10","jet11","jet12"
+                      } )
+    {
+      storageMapFloatArray["gen_"+tag+"_pt"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_y"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_eta"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_phi"] = new Float_t;
+      storageMapFloatArray["gen_"+tag+"_mass"] = new Float_t;
+    }
+
+       storageMapFloatArray["genJet_isValid"]         = new Float_t[20];
+       storageMapFloatArray["genJet_pt"]         = new Float_t[20];
+       storageMapFloatArray["genJet_y"]        = new Float_t[20];
+       storageMapFloatArray["genJet_eta"]        = new Float_t[20];
+       storageMapFloatArray["genJet_phi"]        = new Float_t[20];
+       storageMapFloatArray["genJet_mass"]          = new Float_t[20];
+
 }
 void TrippleHTag::fillGenPrticle(TString tag, const reco::Candidate* particle)
 {
@@ -116,6 +182,19 @@ void TrippleHTag::fillGenPrticle(TString tag, const reco::Candidate* particle)
       storageMapFloatArray["gen_"+tag+"_phi"][0]   = particle->phi() ;
       storageMapFloatArray["gen_"+tag+"_e"][0]   = particle->energy() ;
       storageMapFloatArray["gen_"+tag+"_numberOfDaughters"][0]   = particle->numberOfDaughters() ;
+      storageMapFloatArray["gen_"+tag+"_mother"][0]    = particle->mother()->pdgId()  ;
+      storageMapFloatArray["gen_"+tag+"_isHard"][0]    = -2.0 ; //particle->isHardProcess() ;
+      storageMapFloatArray["gen_"+tag+"_isPromptFS"][0]   = -2.0 ; //particle->fromHardProcessFinalState() ;
+      storageMapFloatArray["gen_"+tag+"_isFHPFS"][0]   = -2.0 ; //particle->fromHardProcessFinalState() ;
+    
+ //     std::cout<<"\n 125 Adding  for prompt photon for "<<tag<<" !\n";
+ //     std::cout<<storageMapFloatArray["gen_"+tag+"_pt"][0] <<"\n";
+ //     std::cout<<storageMapFloatArray["gen_"+tag+"_pdgId"][0] <<"\n";
+ //     std::cout<<storageMapFloatArray["gen_"+tag+"_y"][0] <<"\n";
+ //     std::cout<<storageMapFloatArray["gen_"+tag+"_eta"][0] <<"\n";
+ //     std::cout<<storageMapFloatArray["gen_"+tag+"_phi"][0] <<"\n";
+ //     std::cout<<storageMapFloatArray["gen_"+tag+"_e"][0] <<"\n";
+ //     std::cout<<storageMapFloatArray["gen_"+tag+"_numberOfDaughters"][0] <<"\n";
 }
 
 void TrippleHTag::fillGenPrticle(TString tag, const reco::GenParticle &particle)
@@ -127,13 +206,25 @@ void TrippleHTag::fillGenPrticle(TString tag, const reco::GenParticle &particle)
       storageMapFloatArray["gen_"+tag+"_phi"][0]   = particle.phi() ;
       storageMapFloatArray["gen_"+tag+"_e"][0]   = particle.energy() ;
       storageMapFloatArray["gen_"+tag+"_numberOfDaughters"][0]   = particle.numberOfDaughters() ;
+      storageMapFloatArray["gen_"+tag+"_mother"][0]    = particle.mother()->pdgId()  ;
+      storageMapFloatArray["gen_"+tag+"_isHard"][0]    = particle.isHardProcess() ;
+      storageMapFloatArray["gen_"+tag+"_isPromptFS"][0]    = particle.isPromptFinalState() ;
+      storageMapFloatArray["gen_"+tag+"_isFHPFS"][0]   = particle.fromHardProcessFinalState() ;
+      //std::cout<<"\nAdding  for prompt photon for "<<tag<<" !\n";
+      //std::cout<<storageMapFloatArray["gen_"+tag+"_pt"][0] <<"\n";
+      //std::cout<<storageMapFloatArray["gen_"+tag+"_pdgId"][0] <<"\n";
+      //std::cout<<storageMapFloatArray["gen_"+tag+"_y"][0] <<"\n";
+      //std::cout<<storageMapFloatArray["gen_"+tag+"_eta"][0] <<"\n";
+      //std::cout<<storageMapFloatArray["gen_"+tag+"_phi"][0] <<"\n";
+      //std::cout<<storageMapFloatArray["gen_"+tag+"_e"][0] <<"\n";
+      //std::cout<<storageMapFloatArray["gen_"+tag+"_numberOfDaughters"][0] <<"\n";
 }
 
 
 float TrippleHTag::getGenDetails( std::string item_) const
 {
     TString item(item_.c_str());
-
+   // std::cout<<"Looking for "<<item<<"\n";
     auto itm=storageMapFloatArray.find("gen_isValid") ;
     if( itm == storageMapFloatArray.end() )
     {
@@ -145,14 +236,87 @@ float TrippleHTag::getGenDetails( std::string item_) const
     }
 
     itm=storageMapFloatArray.find(item) ;
-    
     if( itm == storageMapFloatArray.end() )
     {
         std::cout<<"Item asked not found getGenDetails || "<<item<<" || \n";
     }
+  //  std::cout<<" Found it ! ";
     return (itm->second[0]);
 }
 
+void TrippleHTag::fillGenJets(const edm::Handle<edm::View<reco::GenJet>> genJets )
+{    
+    for( unsigned int i = 0 ; i < 20 ; i++ ) 
+    {
+      storageMapFloatArray["genJet_pt"][i]   = -1.0  ;
+      storageMapFloatArray["genJet_y"][i]    = -66.0 ;
+      storageMapFloatArray["genJet_eta"][i]  = -66.0 ;
+      storageMapFloatArray["genJet_phi"][i]  = -66.0 ;
+      storageMapFloatArray["genJet_mass"][i] = -1.0  ;
+    }
+
+
+                
+     for( unsigned int gjLoop = 0 ; gjLoop < genJets->size() ; gjLoop++ ) {
+        edm::Ptr<reco::GenJet> gj = genJets->ptrAt( gjLoop );
+        if ( gjLoop  > 19 ) break;
+      
+        storageMapFloatArray["genJet_pt"][gjLoop]   =  gj->pt();
+        storageMapFloatArray["genJet_y"][gjLoop]    =  gj->y();
+        storageMapFloatArray["genJet_eta"][gjLoop]  =  gj->eta();
+        storageMapFloatArray["genJet_phi"][gjLoop]  =  gj->phi();
+        storageMapFloatArray["genJet_mass"][gjLoop] =  gj->mass();
+        }
+
+}
+
+
+
+
+void TrippleHTag::fillPromptGenDetails( edm::Handle<edm::View<reco::GenParticle>> pruned  )
+{    
+    int nPromptPhotons=0;
+    size_t promptPhotonIdx[10];
+  //  std::cout<<"\nNew Event \n";
+    for(size_t i=0; i< pruned->size();i++)
+    {
+        const reco::GenParticle * part_pru = (&(*pruned)[i]);
+//          if(not (&(*pruned)[i])->isPromptFinalState()) continue;
+//          if((&(*pruned)[i])->isHardProcess())
+//           std::cout<<i<<" pdgid : "<< part_pru->pdgId() << "    status : " << part_pru->status() 
+//                    << "   isHard " << part_pru->isHardProcess()  
+//                    << "   mother " << part_pru->mother()->pdgId()   << std::endl
+//                    << "   isPromptFinalState() " << part_pru->isPromptFinalState()   << std::endl;
+          if( part_pru->pt() < 15.0 ) continue ;
+          if( part_pru->pdgId()==22 )
+          {
+                promptPhotonIdx[nPromptPhotons]=i;
+                //std::cout<<"[ "<<i<<" ]"<<" got prompt photon : "<<part_pru->pdgId()<<" , "
+                //         <<promptPhotonIdx[nPromptPhotons]<<" , "
+                //         <<part_pru->pt()<<" , "
+                //         <<part_pru->numberOfDaughters()<<"\n";
+                nPromptPhotons++;
+          }
+
+          if (nPromptPhotons>5)
+            break;
+    }
+    
+    if(nPromptPhotons > 0)
+        fillGenPrticle("promptG1",pruned->at(promptPhotonIdx[0]));
+    if(nPromptPhotons > 1)
+        fillGenPrticle("promptG2",pruned->at(promptPhotonIdx[1]));
+    if(nPromptPhotons > 2)
+        fillGenPrticle("promptG3",pruned->at(promptPhotonIdx[2]));
+    if(nPromptPhotons > 3)
+        fillGenPrticle("promptG4",pruned->at(promptPhotonIdx[3]));
+    if(nPromptPhotons > 4)
+        fillGenPrticle("promptG5",pruned->at(promptPhotonIdx[4]));
+    if(nPromptPhotons > 5)
+        fillGenPrticle("promptG6",pruned->at(promptPhotonIdx[5]));
+
+    storageMapFloatArray["gen_isValid"][0] =  1.0;
+}
 
 void TrippleHTag::fillHHHGenDetails( edm::Handle<edm::View<reco::GenParticle>> pruned  )
 {
@@ -321,6 +485,29 @@ float TrippleHTag::getAK4JetDetails(  std::string item_ ,  Int_t idx) const
     return (itm->second)[idx];
 }
 
+float TrippleHTag::getGenJDetails(  std::string item_ ,  Int_t idx) const
+{
+    TString item(item_.c_str());
+    if(  idx >= N_JET_MAX  )
+    {
+        return -1.111e3;       
+    }
+    auto itm=storageMapFloatArray.find("genJet_isValid") ;
+    if( itm == storageMapFloatArray.end() )
+    {
+        return -1.111e3;       
+    }
+    if( (itm->second)[idx]< 0.0 )
+    {
+        return -1.111e3;       
+    }
+
+    itm=storageMapFloatArray.find(item) ;
+    return (itm->second)[idx];
+}
+
+
+
 void TrippleHTag::addAK4JetDetails( const std::vector<edm::Ptr<flashgg::Jet> > jets)
 {   
     int idx=0;
@@ -328,7 +515,7 @@ void TrippleHTag::addAK4JetDetails( const std::vector<edm::Ptr<flashgg::Jet> > j
     {
             storageMapFloatArray["jet_isValid"][idx]       = -1 ;
             storageMapFloatArray["jet_isValid"][idx]        = 0.0 ;
-            storageMapFloatArray["jet_pt"][idx]        = 0.0 ;
+            storageMapFloatArray["jet_pt"][idx]        = -1.0 ;
             storageMapFloatArray["jet_eta"][idx]       = 0.0 ;
             storageMapFloatArray["jet_phi"][idx]       = 0.0 ;
             storageMapFloatArray["jet_mass"][idx]         = 0.0 ;

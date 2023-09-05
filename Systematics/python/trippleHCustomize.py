@@ -12,7 +12,9 @@ class TrippleHCustomize():
         self.metaConditions = metaConditions
         self.tagList = [ ["TrippleHTag",12] ]
         self.customizeTagSequence()
-
+        if self.customize.minNGoodJets > 0 :
+            self.process.flashggTrippleHTag.minNGoodJets = self.customize.minNGoodJets
+            
     def vbfHHVariables(self):
         variables = [ 
         ]
@@ -32,7 +34,7 @@ class TrippleHCustomize():
                 "h1SubleadingJet_pt := h1SubleadJet().pt",
                 "h2LeadingJet_pt := h2LeadJet().pt",
                 "h2SubleadingJet_pt := h2SubleadJet().pt",
-                "HHbbggMVA := MVA()"
+                "HHbbggMVA := MVA()",
             ]
             if self.customize.processId != "Data":
                 var_workspace += [
@@ -41,6 +43,7 @@ class TrippleHCustomize():
                     'btagReshapeWeight := weight("JetBTagReshapeWeightCentral")',
                 ]
                 variables += [
+                    "nGoodJets := getNGoodJets()",
                     "genMhhh := genMhhh()",
                     "genAbsCosThetaStar_CS := abs(genCosThetaStar_CS())",
                     
@@ -57,30 +60,30 @@ class TrippleHCustomize():
                     'btagReshapeWeight := weight("JetBTagReshapeWeightCentral")',
                 ]
             variables += [                
-                "h1LeadingJet_bDis := h1LeadJet().bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')",#FIXME make the btag type configurable?
-                "h1LeadingJet_DeepCSV := h1LeadJet().bDiscriminator('pfDeepCSVJetTags:probb')+h1LeadJet().bDiscriminator('pfDeepCSVJetTags:probbb')",#FIXME make the btag type configurable?
-                "h1LeadingJet_DeepFlavour := h1LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probb')+h1LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probbb')+h1LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:problepb')",#FIXME make the btag type configurable?
-                "h1LeadingJet_puJetIdMVA := h1LeadJet().puJetIdMVA()",
-                "h1LeadingJet_QGL := h1LeadJet().QGL()",                
+          #      "h1LeadingJet_bDis := h1LeadJet().bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')",#FIXME make the btag type configurable?
+          #      "h1LeadingJet_DeepCSV := h1LeadJet().bDiscriminator('pfDeepCSVJetTags:probb')+h1LeadJet().bDiscriminator('pfDeepCSVJetTags:probbb')",#FIXME make the btag type configurable?
+          #      "h1LeadingJet_DeepFlavour := h1LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probb')+h1LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probbb')+h1LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:problepb')",#FIXME make the btag type configurable?
+          #      "h1LeadingJet_puJetIdMVA := h1LeadJet().puJetIdMVA()",
+          #      "h1LeadingJet_QGL := h1LeadJet().QGL()",                
 
-                "h1SubleadingJet_bDis := h1SubleadJet().bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')",
-                "h1SubleadingJet_DeepCSV := h1SubleadJet().bDiscriminator('pfDeepCSVJetTags:probb')+h1SubleadJet().bDiscriminator('pfDeepCSVJetTags:probbb')",
-                "h1SubleadingJet_DeepFlavour := h1SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probb')+h1SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probbb')+h1SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:problepb')",#FIXME make the btag type configurable?
-                "h1SubleadingJet_puJetIdMVA := h1SubleadJet().puJetIdMVA()",
-                "h1SubleadingJet_QGL := h1SubleadJet().QGL()",
+          #      "h1SubleadingJet_bDis := h1SubleadJet().bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')",
+          #      "h1SubleadingJet_DeepCSV := h1SubleadJet().bDiscriminator('pfDeepCSVJetTags:probb')+h1SubleadJet().bDiscriminator('pfDeepCSVJetTags:probbb')",
+          #      "h1SubleadingJet_DeepFlavour := h1SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probb')+h1SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probbb')+h1SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:problepb')",#FIXME make the btag type configurable?
+          #      "h1SubleadingJet_puJetIdMVA := h1SubleadJet().puJetIdMVA()",
+          #      "h1SubleadingJet_QGL := h1SubleadJet().QGL()",
 
 
-                "h2LeadingJet_bDis := h2LeadJet().bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')",#FIXME make the btag type configurable?
-                "h2LeadingJet_DeepCSV := h2LeadJet().bDiscriminator('pfDeepCSVJetTags:probb')+h2LeadJet().bDiscriminator('pfDeepCSVJetTags:probbb')",#FIXME make the btag type configurable?
-                "h2LeadingJet_DeepFlavour := h2LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probb')+h2LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probbb')+h2LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:problepb')",#FIXME make the btag type configurable?
-                "h2LeadingJet_puJetIdMVA := h2LeadJet().puJetIdMVA()",
-                "h2LeadingJet_QGL := h2LeadJet().QGL()", 
+          #      "h2LeadingJet_bDis := h2LeadJet().bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')",#FIXME make the btag type configurable?
+          #      "h2LeadingJet_DeepCSV := h2LeadJet().bDiscriminator('pfDeepCSVJetTags:probb')+h2LeadJet().bDiscriminator('pfDeepCSVJetTags:probbb')",#FIXME make the btag type configurable?
+          #      "h2LeadingJet_DeepFlavour := h2LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probb')+h2LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probbb')+h2LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:problepb')",#FIXME make the btag type configurable?
+          #      "h2LeadingJet_puJetIdMVA := h2LeadJet().puJetIdMVA()",
+          #      "h2LeadingJet_QGL := h2LeadJet().QGL()", 
    
-                "h2SubleadingJet_bDis := h2SubleadJet().bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')",
-                "h2SubleadingJet_DeepCSV := h2SubleadJet().bDiscriminator('pfDeepCSVJetTags:probb')+h2SubleadJet().bDiscriminator('pfDeepCSVJetTags:probbb')",
-                "h2SubleadingJet_DeepFlavour := h2SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probb')+h2SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probbb')+h2SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:problepb')",#FIXME make the btag type configurable?
-                "h2SubleadingJet_puJetIdMVA := h2SubleadJet().puJetIdMVA()",
-                "h2SubleadingJet_QGL := h2SubleadJet().QGL()",                
+          #      "h2SubleadingJet_bDis := h2SubleadJet().bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')",
+          #      "h2SubleadingJet_DeepCSV := h2SubleadJet().bDiscriminator('pfDeepCSVJetTags:probb')+h2SubleadJet().bDiscriminator('pfDeepCSVJetTags:probbb')",
+          #      "h2SubleadingJet_DeepFlavour := h2SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probb')+h2SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probbb')+h2SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:problepb')",#FIXME make the btag type configurable?
+          #      "h2SubleadingJet_puJetIdMVA := h2SubleadJet().puJetIdMVA()",
+          #      "h2SubleadingJet_QGL := h2SubleadJet().QGL()",                
 
                 "absCosThetaStar_CS := abs(getCosThetaStar_CS())",
                 "absCosThetaStar_CS_old := abs(getCosThetaStar_CS_old(6500))",
@@ -126,62 +129,66 @@ class TrippleHCustomize():
                 "subleadingPhoton_phi := diPhoton.subLeadingPhoton.phi",
                 
                 
-                "h1LeadingJet_pt := h1LeadJet().pt",
-                "h1LeadingJet_eta := h1LeadJet().eta",
-                "h1LeadingJet_phi := h1LeadJet().phi",
-                "h1LeadingJet_mass := h1LeadJet().p4().M()",
-                
-                "h2LeadingJet_pt := h2LeadJet().pt",
-                "h2LeadingJet_eta := h2LeadJet().eta",
-                "h2LeadingJet_phi := h2LeadJet().phi",
-                "h2LeadingJet_mass := h2LeadJet().p4().M()",
-                
-                "h1SubleadingJet_pt := h1SubleadJet().pt",
-                "h1SubleadingJet_eta := h1SubleadJet().eta",
-                "h1SubleadingJet_phi := h1SubleadJet().phi",
-                "h1SubleadingJet_mass := h1SubleadJet().p4().M()",
+          #      "h1LeadingJet_pt := h1LeadJet().pt",
+          #      "h1LeadingJet_eta := h1LeadJet().eta",
+          #      "h1LeadingJet_phi := h1LeadJet().phi",
+          #      "h1LeadingJet_mass := h1LeadJet().p4().M()",
+          #      
+          #      "h2LeadingJet_pt := h2LeadJet().pt",
+          #      "h2LeadingJet_eta := h2LeadJet().eta",
+          #      "h2LeadingJet_phi := h2LeadJet().phi",
+          #      "h2LeadingJet_mass := h2LeadJet().p4().M()",
+          #      
+          #      "h1SubleadingJet_pt := h1SubleadJet().pt",
+          #      "h1SubleadingJet_eta := h1SubleadJet().eta",
+          #      "h1SubleadingJet_phi := h1SubleadJet().phi",
+          #      "h1SubleadingJet_mass := h1SubleadJet().p4().M()",
 
-                "h2SubleadingJet_pt := h2SubleadJet().pt",
-                "h2SubleadingJet_eta := h2SubleadJet().eta",
-                "h2SubleadingJet_phi := h2SubleadJet().phi",
-                "h2SubleadingJet_mass := h2SubleadJet().p4().M()",
+          #      "h2SubleadingJet_pt := h2SubleadJet().pt",
+          #      "h2SubleadingJet_eta := h2SubleadJet().eta",
+          #      "h2SubleadingJet_phi := h2SubleadJet().phi",
+          #      "h2SubleadingJet_mass := h2SubleadJet().p4().M()",
 
                 "ntagMuons := ntagMuons()",
                 "ntagElectrons := ntagElectrons()",
                 "nMuons2018 := nMuons2018()",
                 "nElectrons2018 := nElectrons2018()",
                 #variables for the L2 energy regression
-                "leadingJet_pt  := h1LeadJet().pt",
-                "leadingJet_eta := h1LeadJet().eta",
-                "leadingJet_phi := h1LeadJet().phi",
-                "leadingJet_mass := h1LeadJet().p4().M()",
-                "leadingJet_e := h1LeadJet().p4().E()",
-                "leadingJet_DeepFlavour := h1LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probb')+h1LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probbb')+h1LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:problepb')", 
-                "subleadingJet_pt  := h1SubleadJet().pt",
-                "subleadingJet_eta := h1SubleadJet().eta",
-                "subleadingJet_phi := h1SubleadJet().phi",
-                "subleadingJet_mass := h1SubleadJet().p4().M()",
-                "subleadingJet_e := h1SubleadJet().p4().E()",
-                "subleadingJet_DeepFlavour := h1SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probb')+h1SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probbb')+h1SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:problepb')",
+         #       "leadingJet_pt  := h1LeadJet().pt",
+         #       "leadingJet_eta := h1LeadJet().eta",
+         #       "leadingJet_phi := h1LeadJet().phi",
+         #       "leadingJet_mass := h1LeadJet().p4().M()",
+         #       "leadingJet_e := h1LeadJet().p4().E()",
+         #       "leadingJet_DeepFlavour := h1LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probb')+h1LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probbb')+h1LeadJet().bDiscriminator('mini_pfDeepFlavourJetTags:problepb')", 
+         #       "subleadingJet_pt  := h1SubleadJet().pt",
+         #       "subleadingJet_eta := h1SubleadJet().eta",
+         #       "subleadingJet_phi := h1SubleadJet().phi",
+         #       "subleadingJet_mass := h1SubleadJet().p4().M()",
+         #       "subleadingJet_e := h1SubleadJet().p4().E()",
+         #       "subleadingJet_DeepFlavour := h1SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probb')+h1SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:probbb')+h1SubleadJet().bDiscriminator('mini_pfDeepFlavourJetTags:problepb')",
                 "corrMET := corrMET",
                 "corrMETPhi := corrMETPhi",
                 "MjjReg_phi12 := MjjReg_phi12",
                 "MjjReg_phi1M := MjjReg_phi1M",
                 "MjjReg_phi2M := MjjReg_phi2M",
                 "year := year"          
-            ]
+            ] 
+            varsToGet=[ "gen_@@ITEM_pt",
+                        "gen_@@ITEM_pdgId",
+                        "gen_@@ITEM_y",
+                        "gen_@@ITEM_eta",
+                        "gen_@@ITEM_phi",
+                        "gen_@@ITEM_e",
+                        "gen_@@ITEM_numberOfDaughters",
+                        "gen_@@ITEM_mother",
+                        "gen_@@ITEM_isHard",
+                        "gen_@@ITEM_isPromptFS",
+                        "gen_@@ITEM_isFHPFS",
+                      ]
+            genVarList=[]
             if self.customize.doHHHGen:
                 self.process.flashggTrippleHTag.doHHHGen = True
-            ## Addibg all the genHHH 
-                varsToGet=[ "gen_@@ITEM_pt",
-                            "gen_@@ITEM_pdgId",
-                            "gen_@@ITEM_y",
-                            "gen_@@ITEM_eta",
-                            "gen_@@ITEM_phi",
-                            "gen_@@ITEM_e",
-                            "gen_@@ITEM_numberOfDaughters",
-                          ]
-                genVarList=[]
+            ## Addibg all the genHHH
                 for item in ["H1","H2","H3",
                              "H1_dau1","H2_dau1",
                              "H3_dau1","H1_dau2",
@@ -190,17 +197,26 @@ class TrippleHCustomize():
                         genVarList.append( var.replace('@@ITEM',item)+' := getGenDetails("'+var.replace( '@@ITEM',item  )+'" )' )
 
                 variables += genVarList
-                print()
-                print()
-                print(" GEN-VAR List  ")
-                print(genVarList)
-                print()
-                print()
+
+            if self.customize.doPromptGen:
+                self.process.flashggTrippleHTag.doPromptGen = True
+                for item in [ "promptG1" , "promptG2" , "promptG3" ,"promptG4","promptG5","promptG6" ] :
+                    for var in varsToGet:
+                        genVarList.append( var.replace('@@ITEM',item)+' := getGenDetails("'+var.replace( '@@ITEM',item  )+'" )' )
+                variables += genVarList
+            
+            print()
+            print()
+            print(" GEN-VAR List  | self.customize.doHHHGen    = ",self.customize.doHHHGen   )
+            print(" GEN-VAR List  | self.customize.doPromptGen = ",self.customize.doPromptGen)
+            print(genVarList)
+            print()
+            print()
 
 
 
             ##  Adding all jet information
-            njetMax=8
+            njetMax=13
             varsToGet=["jet_isValid","jet_pt",
                         "jet_eta","jet_phi",
                         "jet_mass","jet_csvScore",
