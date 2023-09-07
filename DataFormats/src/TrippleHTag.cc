@@ -165,12 +165,12 @@ void TrippleHTag::addGenObjectBranches()
       storageMapFloatArray["gen_"+tag+"_mass"] = new Float_t;
     }
 
-       storageMapFloatArray["genJet_isValid"]         = new Float_t[20];
-       storageMapFloatArray["genJet_pt"]         = new Float_t[20];
-       storageMapFloatArray["genJet_y"]        = new Float_t[20];
-       storageMapFloatArray["genJet_eta"]        = new Float_t[20];
-       storageMapFloatArray["genJet_phi"]        = new Float_t[20];
-       storageMapFloatArray["genJet_mass"]          = new Float_t[20];
+       storageMapFloatArray["genJet_isValid"]         = new Float_t[N_GEN_JET_MAX];
+       storageMapFloatArray["genJet_pt"]         = new Float_t[N_GEN_JET_MAX];
+       storageMapFloatArray["genJet_y"]        = new Float_t[N_GEN_JET_MAX];
+       storageMapFloatArray["genJet_eta"]        = new Float_t[N_GEN_JET_MAX];
+       storageMapFloatArray["genJet_phi"]        = new Float_t[N_GEN_JET_MAX];
+       storageMapFloatArray["genJet_mass"]          = new Float_t[N_GEN_JET_MAX];
 
 }
 void TrippleHTag::fillGenPrticle(TString tag, const reco::Candidate* particle)
@@ -246,20 +246,20 @@ float TrippleHTag::getGenDetails( std::string item_) const
 
 void TrippleHTag::fillGenJets(const edm::Handle<edm::View<reco::GenJet>> genJets )
 {    
-    for( unsigned int i = 0 ; i < 20 ; i++ ) 
+    for( unsigned int i = 0 ; i < N_GEN_JET_MAX ; i++ ) 
     {
       storageMapFloatArray["genJet_pt"][i]   = -1.0  ;
-      storageMapFloatArray["genJet_y"][i]    = -66.0 ;
       storageMapFloatArray["genJet_eta"][i]  = -66.0 ;
       storageMapFloatArray["genJet_phi"][i]  = -66.0 ;
       storageMapFloatArray["genJet_mass"][i] = -1.0  ;
+      storageMapFloatArray["genJet_y"][i]    = -66.0 ;
     }
 
 
                 
      for( unsigned int gjLoop = 0 ; gjLoop < genJets->size() ; gjLoop++ ) {
+        if ( gjLoop  >= N_GEN_JET_MAX ) break;
         edm::Ptr<reco::GenJet> gj = genJets->ptrAt( gjLoop );
-        if ( gjLoop  > 19 ) break;
       
         storageMapFloatArray["genJet_pt"][gjLoop]   =  gj->pt();
         storageMapFloatArray["genJet_y"][gjLoop]    =  gj->y();
