@@ -14,17 +14,17 @@ flashggTagSorter = cms.EDProducer('FlashggTagSorter',
                                   # Optionally can add category ranges if priority depends on category number
                                   TagPriorityRanges = cms.VPSet(
 #        cms.PSet(TagName = cms.InputTag('flashggTTHDiLeptonTag')), 
-        cms.PSet(TagName = cms.InputTag('flashggTTHLeptonicTag')), 
-	cms.PSet(TagName = cms.InputTag('flashggTHQLeptonicTag')),
-        cms.PSet(TagName = cms.InputTag('flashggZHLeptonicTag')),
-        cms.PSet(TagName = cms.InputTag('flashggWHLeptonicTag')),
-        cms.PSet(TagName = cms.InputTag('flashggTTHHadronicTag')),   
+#        cms.PSet(TagName = cms.InputTag('flashggTTHLeptonicTag')), 
+#	     cms.PSet(TagName = cms.InputTag('flashggTHQLeptonicTag')),
+#        cms.PSet(TagName = cms.InputTag('flashggZHLeptonicTag')),
+#        cms.PSet(TagName = cms.InputTag('flashggWHLeptonicTag')),
+#        cms.PSet(TagName = cms.InputTag('flashggTTHHadronicTag')),   
 #        cms.PSet(TagName = cms.InputTag('flashggDoubleHTag')), # hint priority for double H tag w/ ttH veto
-        cms.PSet(TagName = cms.InputTag('flashggVBFTag')),     
-        cms.PSet(TagName = cms.InputTag('flashggVHMetTag')),
-        cms.PSet(TagName = cms.InputTag('flashggVHHadronicTag')),
-        cms.PSet(TagName = cms.InputTag('flashggUntagged'))
-        ###                                                                 cms.PSet(TagName = cms.InputTag('flashggSigmaMoMpToMTag'))
+#        cms.PSet(TagName = cms.InputTag('flashggVBFTag')),     
+#        cms.PSet(TagName = cms.InputTag('flashggVHMetTag')),
+#        cms.PSet(TagName = cms.InputTag('flashggVHHadronicTag')),
+#        cms.PSet(TagName = cms.InputTag('flashggUntagged'))
+#        cms.PSet(TagName = cms.InputTag('flashggSigmaMoMpToMTag'))
         ),
                                   MassCutUpper=cms.double(180.),
                                   MassCutLower=cms.double(100),

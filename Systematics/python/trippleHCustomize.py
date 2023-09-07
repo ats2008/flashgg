@@ -1,5 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 from  flashgg.Systematics.flashggJetSystematics_cfi import jetSystematicsCustomize
+from flashgg.Systematics.SystematicDumperDefaultVariables import minimalVariables,minimalHistograms,minimalNonSignalVariables,systematicVariables
 
 class TrippleHCustomize():
     """
@@ -10,7 +11,7 @@ class TrippleHCustomize():
         self.process = process
         self.customize = customize
         self.metaConditions = metaConditions
-        self.tagList = [ ["TrippleHTag",12] ]
+        self.tagList = [ ["TrippleHTag",1] ]
         self.customizeTagSequence()
         if self.customize.minNGoodJets > 0 :
             self.process.flashggTrippleHTag.minNGoodJets = self.customize.minNGoodJets
@@ -204,19 +205,40 @@ class TrippleHCustomize():
                     for var in varsToGet:
                         genVarList.append( var.replace('@@ITEM',item)+' := getGenDetails("'+var.replace( '@@ITEM',item  )+'" )' )
                 variables += genVarList
-            
-            print()
-            print()
-            print(" GEN-VAR List  | self.customize.doHHHGen    = ",self.customize.doHHHGen   )
-            print(" GEN-VAR List  | self.customize.doPromptGen = ",self.customize.doPromptGen)
-            print(genVarList)
-            print()
-            print()
+
+            if self.customize.doGenJets:
+                
+                print("Adding the GenJet information ! ")
+                self.process.flashggTrippleHTag.doGenJets = True
+
+                ##  Adding all jet information
+                njetMax=16
+                varsToGet=[ 
+                            "genJet_pt",
+                            "genJet_eta",
+                            "genJet_phi",
+                            "genJet_mass",
+                            "genJet_y"
+                          ]
+                genjetVarList=[]
+                for jetVar in varsToGet:
+                    for i in range(njetMax):
+                        genjetVarList.append( jetVar.replace('Jet_','Jet_'+str(i)+'_')+' := getGenJDetails("'+jetVar+'" , '+ str(i) +' )' )
+                variables += genjetVarList
+                print("Adding the genJet Vars : ",genjetVarList)
+
+            print " GEN-VAR List  | self.customize.doHHHGen    = ",self.customize.doHHHGen   
+            print " GEN-VAR List  | self.customize.doPromptGen = ",self.customize.doPromptGen
+            print " GEN-VAR List  | self.customize.doGenJets = ",self.customize.doGenJets
 
 
 
             ##  Adding all jet information
-            njetMax=13
+            njetMax=8
+            if self.customize.njetMax > 0 :
+                njetMax=self.customize.njetMax
+            print "Setting njetMax = ",njetMax
+
             varsToGet=["jet_isValid","jet_pt",
                         "jet_eta","jet_phi",
                         "jet_mass","jet_csvScore",
@@ -237,7 +259,7 @@ class TrippleHCustomize():
                 for i in range(njetMax):
                     jetVarList.append( jetVar.replace('jet_','jet_'+str(i)+'_')+' := getAK4JetDetails("'+jetVar+'" , '+ str(i) +' )' )
             variables += jetVarList
-            print(jetVarList)
+            #print(jetVarList)
 
 
         if self.customize.doBJetRegression and self.customize.trippleHTagsOnly: variables +=[
@@ -321,16 +343,10 @@ class TrippleHCustomize():
 
 
     def systematicVariables(self):
-      systematicVariables=["CMS_hgg_mass[160,100,180]:=diPhoton().mass","Mjj[120,70,190]:=dijet().M()","HHbbggMVA[100,0,1.]:=MVA()","MX[300,250,5000]:=MX()","eventNumber[40,0.,1000000.]:=eventNumber()","genMhh[300,250,5000]:=genMhh()","genAbsCosThetaStar_CS[100,0,1]:=abs(genCosThetaStar_CS())",'btagReshapeWeight[100,-10.,10]:=weight("JetBTagReshapeWeightCentral")',"ntagMuons[100,0.,10] := ntagMuons()","ntagElectrons[100,0.,10] := ntagElectrons()","nMuons2018[100,0.,10] := nMuons2018()","nElectrons2018[100,0.,10] := nElectrons2018()","leadingJet_pt[100,0,1000] := leadJet().pt","subleadingJet_pt[100,0,1000] := subleadJet().pt"]
+      systematicVariables=minimalVariables  #["CMS_hgg_mass[160,100,180]:=diPhoton().mass","Mjj[120,70,190]:=dijet().M()","HHbbggMVA[100,0,1.]:=MVA()","MX[300,250,5000]:=MX()","eventNumber[40,0.,1000000.]:=eventNumber()","genMhh[300,250,5000]:=genMhh()","genAbsCosThetaStar_CS[100,0,1]:=abs(genCosThetaStar_CS())",'btagReshapeWeight[100,-10.,10]:=weight("JetBTagReshapeWeightCentral")',"ntagMuons[100,0.,10] := ntagMuons()","ntagElectrons[100,0.,10] := ntagElectrons()","nMuons2018[100,0.,10] := nMuons2018()","nElectrons2018[100,0.,10] := nElectrons2018()","leadingJet_pt[100,0,1000] := leadJet().pt","subleadingJet_pt[100,0,1000] := subleadJet().pt"]
       
-      if self.customize.doubleHReweight > 0: 
-         for num in range(0,12):  #12 benchmarks
-            systematicVariables += ["benchmark_reweight_%d[100,0,200] := getBenchmarkReweight(%d)"%(num,num)]
-         systematicVariables+= ["benchmark_reweight_SM[100,0,200] := getBenchmarkReweight(12)"]
-         systematicVariables+= ["benchmark_reweight_box[100,0,200] := getBenchmarkReweight(13)"]
-
-      if self.customize.doDoubleHttHKiller : 
-             systematicVariables +=["ttHScore[100,0,1.]:=ttHScore()"]
+      
+      systematicVariables += self.variablesToDump()
 
       return systematicVariables
 
@@ -422,14 +438,14 @@ class TrippleHCustomize():
         '''
         merging step taking into account that different syst variations are produced by the same producer in the case of the HH tags
         '''
-
+        print "merging step taking into account that different syst variations are produced by the same producer in the case of the HH tags"
         self.process.p.remove(self.process.flashggTagSorter) 
 
         self.process.p.replace(self.process.flashggSystTagMerger,self.process.flashggTrippleHTagSequence*self.process.flashggTagSorter*self.process.flashggSystTagMerger)
-
         for systlabel in systlabels:
             if systlabel!='':
                 self.process.p.remove(getattr(self.process,'flashggTagSorter'+systlabel))
+                setattr(getattr(self.process, 'flashggTagSorter'+systlabel), 'TagPriorityRanges', cms.VPSet( cms.PSet(TagName = cms.InputTag('flashggTrippleHTag', systlabel))))
                 self.process.p.replace(self.process.flashggSystTagMerger,getattr(self.process, 'flashggTagSorter'+systlabel)*self.process.flashggSystTagMerger)            
             else:
                 setattr(getattr(self.process, 'flashggTagSorter'+systlabel), 'TagPriorityRanges', cms.VPSet( cms.PSet(TagName = cms.InputTag('flashggTrippleHTag', systlabel))))
@@ -501,7 +517,7 @@ class TrippleHCustomize():
                             ]
             
         ## define categories for gen-level dumper
-        cfgTools.addCategory(self.process.genDiphotonDumper,  ## events with not reco-level tag
+        cfgTools.addCategory( self.process.genDiphotonDumper,  ## events with not reco-level tag
                              "NoTag", 'isTagged("flashggNoTag")',1,
                              variables=genVariables,
                              dumpGenWeight=self.customize.dumpGenWeight

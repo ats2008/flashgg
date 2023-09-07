@@ -11,7 +11,9 @@
 
 #include "flashgg/Taggers/interface/FunctionHelpers.h"
 
-#define N_JET_MAX 13
+#define N_JET_MAX 20
+#define N_GEN_JET_MAX 20
+
 
 namespace flashgg {
 

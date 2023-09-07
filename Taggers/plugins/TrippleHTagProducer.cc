@@ -30,7 +30,8 @@
 using namespace std;
 using namespace edm;
 
-namespace flashgg {
+namespace flashgg
+{
 
 template<typename T> std::vector<size_t> argsort(const std::vector<T> &array);
 
@@ -186,7 +187,8 @@ TrippleHTagProducer::TrippleHTagProducer( const ParameterSet &iConfig ) :
     multiclassSignalIdx_ = (iConfig.getParameter<edm::ParameterSet>("MVAConfig")).getParameter<int>("multiclassSignalIdx");
     doReweight_ = (iConfig.getParameter<int>("doReweight"));
     auto names = iConfig.getParameter<vector<string>>("reweight_names");
-    for (auto & name : names ) {
+    for (auto & name : names )
+    {
         reweights_.push_back(consumes<float>(edm::InputTag(iConfig.getParameter<string>("reweight_producer"), name))) ;
     }
 
@@ -204,14 +206,16 @@ TrippleHTagProducer::TrippleHTagProducer( const ParameterSet &iConfig ) :
     inputDiPhotonName_= iConfig.getParameter<std::string > ( "DiPhotonName" );
     inputDiPhotonSuffixes_= iConfig.getParameter<std::vector<std::string> > ( "DiPhotonSuffixes" );
     std::vector<edm::InputTag>  diPhotonTags;
-    for (auto & suffix : inputDiPhotonSuffixes_) {
+    for (auto & suffix : inputDiPhotonSuffixes_)
+    {
         systematicsLabels.push_back(suffix);
         std::string inputName = inputDiPhotonName_;
         inputName.append(suffix);
         if (!suffix.empty()) diPhotonTags.push_back(edm::InputTag(inputName));
         else  diPhotonTags.push_back(edm::InputTag(inputDiPhotonName_));
     }
-    for( auto & tag : diPhotonTags ) {
+    for( auto & tag : diPhotonTags )
+    {
         diPhotonTokens_.push_back( consumes<edm::View<flashgg::DiPhotonCandidate> >( tag ) );
     }
 
@@ -219,15 +223,18 @@ TrippleHTagProducer::TrippleHTagProducer( const ParameterSet &iConfig ) :
     inputJetsCollSize_= iConfig.getParameter<unsigned int> ( "JetsCollSize" );
     inputJetsSuffixes_= iConfig.getParameter<std::vector<std::string> > ( "JetsSuffixes" );
     std::vector<edm::InputTag>  jetTags;
-    for (auto & suffix : inputJetsSuffixes_) {
+    for (auto & suffix : inputJetsSuffixes_)
+    {
         if (!suffix.empty()) systematicsLabels.push_back(suffix);  //nominal is already put in the diphoton loop
-        for (unsigned int i = 0; i < inputJetsCollSize_ ; i++) {
+        for (unsigned int i = 0; i < inputJetsCollSize_ ; i++)
+        {
             std::string bregtag = suffix;
             bregtag.append(std::to_string(i));
             jetTags.push_back(edm::InputTag(inputJetsName_,bregtag));
         }
     }
-    for( auto & tag : jetTags ) {
+    for( auto & tag : jetTags )
+    {
         jetTokens_.push_back( consumes<edm::View<flashgg::Jet> >( tag ) );
     }
 
@@ -242,28 +249,33 @@ TrippleHTagProducer::TrippleHTagProducer( const ParameterSet &iConfig ) :
     doCategorization_ = iConfig.getParameter<bool>("doCategorization");
     dottHTagger_ = iConfig.getParameter<bool>("dottHTagger");
     photonElectronVeto_=iConfig.getUntrackedParameter<std::vector<int > >("PhotonElectronVeto");
-    
+
     //needed for HHbbgg MVA
-    if(doMVAFlattening_) {
+    if(doMVAFlattening_)
+    {
         MVAFlatteningFileName_ = iConfig.getUntrackedParameter<edm::FileInPath>("MVAFlatteningFileName");
         MVAFlatteningFile_ = new TFile((MVAFlatteningFileName_.fullPath()).c_str(),"READ");
         MVAFlatteningCumulative_ = (TGraph*)MVAFlatteningFile_->Get("cumulativeGraph");
     }
-    
+
     MVAscaling_ = iConfig.getParameter<double>("MVAscaling");
 
     doSigmaMDecorr_ = iConfig.getUntrackedParameter<unsigned int>("DoSigmaMDecorr");
-    if(doSigmaMDecorr_) {
+    if(doSigmaMDecorr_)
+    {
         sigmaMDecorrFile_ = iConfig.getUntrackedParameter<edm::FileInPath>("SigmaMDecorrFile");
         TFile* f_decorr = new TFile((sigmaMDecorrFile_.fullPath()).c_str(), "READ");
         TH2D* h_decorrEBEB_ = (TH2D*)f_decorr->Get("hist_sigmaM_M_EBEB");
         TH2D* h_decorrNotEBEB_ = (TH2D*)f_decorr->Get("hist_sigmaM_M_notEBEB");
 
-        if(h_decorrEBEB_ && h_decorrNotEBEB_) {
+        if(h_decorrEBEB_ && h_decorrNotEBEB_)
+        {
             transfEBEB_ = new DecorrTransform(h_decorrEBEB_, 125., 1, 0);
             transfNotEBEB_ = new DecorrTransform(h_decorrNotEBEB_, 125., 1, 0);
 
-        } else {
+        }
+        else
+        {
             throw cms::Exception( "Configuration" ) << "The file "<<sigmaMDecorrFile_.fullPath()<<" provided for sigmaM/M decorrelation does not contain the expected histograms."<<std::endl;
         }
     }
@@ -298,7 +310,8 @@ TrippleHTagProducer::TrippleHTagProducer( const ParameterSet &iConfig ) :
     }
 
     // produces<vector<TrippleHTag>>();
-    for (auto & systname : systematicsLabels) {
+    for (auto & systname : systematicsLabels)
+    {
         produces<vector<TrippleHTag>>(systname);
     }
     produces<vector<TagTruthBase>>();
@@ -308,12 +321,15 @@ int TrippleHTagProducer::chooseCategory( float mvavalue, float mxvalue)
 {
     //// should return 0 if mva above all the numbers, 1 if below the first, ..., boundaries.size()-N if below the Nth, ...
     //this is for mva, then you have mx
-    if (!doCategorization_) {
+    if (!doCategorization_)
+    {
         return 0;
     }
     int mvaCat=-1;
-    for( int n = 0 ; n < ( int )mvaBoundaries_.size() ; n++ ) {
-        if( ( double )mvavalue > mvaBoundaries_[mvaBoundaries_.size() - n - 1] ) {
+    for( int n = 0 ; n < ( int )mvaBoundaries_.size() ; n++ )
+    {
+        if( ( double )mvavalue > mvaBoundaries_[mvaBoundaries_.size() - n - 1] )
+        {
             mvaCat = n;
             break;
         }
@@ -322,8 +338,10 @@ int TrippleHTagProducer::chooseCategory( float mvavalue, float mxvalue)
     if (mvaCat==-1) return -1;// Does not pass, object will not be produced
 
     int mxCat=-1;
-    for( unsigned int n = 0 ; n < nMX_ ; n++ ) {
-        if( ( double )mxvalue > mxBoundaries_[(mvaCat+1)*nMX_ - n - 1] ) {
+    for( unsigned int n = 0 ; n < nMX_ ; n++ )
+    {
+        if( ( double )mxvalue > mxBoundaries_[(mvaCat+1)*nMX_ - n - 1] )
+        {
             mxCat = n;
             break;
         }
@@ -363,7 +381,7 @@ bool TrippleHTagProducer::isclose(double a, double b, double rel_tol=1e-09, doub
 
 void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
 {
-    
+
     // update global variables
     globalVariablesComputer_.update(evt);
 
@@ -388,45 +406,57 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
     double genMhhh=0.;
     double genCosThetaStar_CS=0.;
     Handle<View<reco::GenJet> > genJets;
-    if( ! evt.isRealData() ) {
+    if( ! evt.isRealData() )
+    {
+
         Handle<View<reco::GenParticle> > genParticles;
         std::vector<edm::Ptr<reco::GenParticle> > selHiggses;
-        
+
         evt.getByToken( genParticleToken_, genParticles );
         evt.getByToken( genJetToken_, genJets );
-       
-       for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
+
+        for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ )
+        {
             edm::Ptr<reco::GenParticle> genPar = genParticles->ptrAt(genLoop);
             if (selHiggses.size()>1) break;
-            if (genPar->pdgId()==25 && genPar->isHardProcess()) {
+            if (genPar->pdgId()==25 && genPar->isHardProcess())
+            {
                 selHiggses.push_back(genPar);
             }
         }
 
-        if (selHiggses.size()==3) {  // TODO : add the third H
+        if (selHiggses.size()==3)    // TODO : add the third H
+        {
             TLorentzVector H1,H2,H3;
             H1.SetPtEtaPhiE(selHiggses[0]->p4().pt(),selHiggses[0]->p4().eta(),selHiggses[0]->p4().phi(),selHiggses[0]->p4().energy());
             H2.SetPtEtaPhiE(selHiggses[1]->p4().pt(),selHiggses[1]->p4().eta(),selHiggses[1]->p4().phi(),selHiggses[1]->p4().energy());
-            H3.SetPtEtaPhiE(selHiggses[1]->p4().pt(),selHiggses[1]->p4().eta(),selHiggses[1]->p4().phi(),selHiggses[1]->p4().energy());  
+            H3.SetPtEtaPhiE(selHiggses[1]->p4().pt(),selHiggses[1]->p4().eta(),selHiggses[1]->p4().phi(),selHiggses[1]->p4().energy());
             genMhhh  = (H1+H2+H3).M();
             genCosThetaStar_CS = getGenCosThetaStar_CS(H1,H2,H3);
         }
         truths->push_back( truth_obj );
     }
     // read diphotons
-    for (unsigned int diphoton_idx = 0; diphoton_idx < diPhotonTokens_.size(); diphoton_idx++) { //looping over all diphoton systematics
+    for (unsigned int diphoton_idx = 0; diphoton_idx < diPhotonTokens_.size(); diphoton_idx++)   //looping over all diphoton systematics
+    {
         
+    //    std::cout<<"Doing the Diphoton systematics  : [ idx : "<<diphoton_idx<<" ]  suffix : "<< inputDiPhotonSuffixes_[diphoton_idx] <<"\n" ;
+
         Handle<View<flashgg::DiPhotonCandidate> > diPhotons;
         evt.getByToken( diPhotonTokens_[diphoton_idx], diPhotons );
 
         unsigned int loopOverJets = 1;
-        
+
         if (inputDiPhotonSuffixes_[diphoton_idx].empty()) loopOverJets = inputJetsSuffixes_.size();
-        for (unsigned int jet_col_idx = 0; jet_col_idx < loopOverJets; jet_col_idx++) {//looping over all jet systematics, only for nominal diphotons
+        for (unsigned int jet_col_idx = 0; jet_col_idx < loopOverJets; jet_col_idx++)  //looping over all jet systematics, only for nominal diphotons
+        {
+            
+      //      std::cout<<"\tDoing the Jet systematics  : [ idx : "<<jet_col_idx<<" ]  suffix : "<< inputJetsSuffixes_[jet_col_idx] <<" \n" ;
             std::unique_ptr<vector<TrippleHTag> > tags( new vector<TrippleHTag> );
 
             // loop over diphotons
-            for( unsigned int candIndex = 0; candIndex < diPhotons->size() ; candIndex++ ) {
+            for( unsigned int candIndex = 0; candIndex < diPhotons->size() ; candIndex++ )
+            {
                 edm::Ptr<flashgg::DiPhotonCandidate> dipho = diPhotons->ptrAt( candIndex );
 
                 // kinematic cuts on diphotons
@@ -435,21 +465,26 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
 
                 double leadPt = leadPho->pt();
                 double subleadPt = subleadPho->pt();
-                if( scalingPtCuts_ ) {
+                if( scalingPtCuts_ )
+                {
                     leadPt /= dipho->mass();
                     subleadPt /= dipho->mass();
                 }
-                if( leadPt <= minLeadPhoPt_ || subleadPt <= minSubleadPhoPt_ ) {
+                if( leadPt <= minLeadPhoPt_ || subleadPt <= minSubleadPhoPt_ )
+                {
                     continue;
                 }
                 //apply egm photon id with given working point
-                if(doPhotonId_) {
-                    if(leadPho->userFloat("EGMPhotonMVA")<photonIDCut_ || subleadPho->userFloat("EGMPhotonMVA")<photonIDCut_) {
+                if(doPhotonId_)
+                {
+                    if(leadPho->userFloat("EGMPhotonMVA")<photonIDCut_ || subleadPho->userFloat("EGMPhotonMVA")<photonIDCut_)
+                    {
                         continue;
                     }
                 }
                 //electron veto
-                if(leadPho->passElectronVeto()<photonElectronVeto_[0] || subleadPho->passElectronVeto()<photonElectronVeto_[1]) {
+                if(leadPho->passElectronVeto()<photonElectronVeto_[0] || subleadPho->passElectronVeto()<photonElectronVeto_[1])
+                {
                     continue;
                 }
 
@@ -466,10 +501,12 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 evt.getByToken( electronToken_, theElectrons );
 
 
-                if(theMuons->size()>0) {
+                if(theMuons->size()>0)
+                {
                     Muons2018 = LeptonSelection2018::selectMuons(theMuons->ptrs(), dipho, vertices->ptrs(), TTHLeptonictag_MuonPtCut_, TTHLeptonictag_MuonEtaCut_, TTHLeptonictag_MuonIsoCut_, TTHLeptonictag_MuonPhotonDrCut_, 0);
                 }
-                if(theElectrons->size()>0) {
+                if(theElectrons->size()>0)
+                {
                     Electrons2018 = LeptonSelection2018::selectElectrons(theElectrons->ptrs(), dipho, TTHLeptonictag_ElePtCut_, TTHLeptonictag_EleEtaCuts_, TTHLeptonictag_ElePhotonDrCut_, TTHLeptonictag_ElePhotonZMassCut_, TTHLeptonictag_DeltaRTrkEle_, 0);
                 }
 
@@ -481,15 +518,15 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
 
                 edm::Handle<edm::View<flashgg::Jet> > jets;
                 evt.getByToken( jetTokens_[jet_col_idx*inputJetsCollSize_+vtx], jets);  //take the corresponding vertex of current systematic
-                
+
                 double a(1.04);
                 double b(sqrt(1+a*a));
                 // photon-jet cross-cleaning and pt/eta/btag/jetid cuts for jets
                 std::vector<edm::Ptr<flashgg::Jet> > cleaned_jets;
                 std::vector<float> cleaned_jets_btagScore;
-                for( size_t ijet=0; ijet < jets->size(); ++ijet ) 
-                   {
-                     // jets are ordered in pt
+                for( size_t ijet=0; ijet < jets->size(); ++ijet )
+                {
+                    // jets are ordered in pt
 
                     auto jet = jets->ptrAt(ijet);
                     if (jet->pt()<minJetPt_ || fabs(jet->eta())>maxJetEta_)continue;
@@ -497,66 +534,77 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     double btag=0.;
                     for (unsigned int btag_num=0; btag_num<bTagType_.size(); btag_num++)
                         btag+=jet->bDiscriminator(bTagType_[btag_num]);
-                   /*
-                    if (btag<0) continue;//FIXME threshold might not be 0? For CMVA and DeepCSV it is 0.
-                    
-                    if( useJetID_ ) {
-                        if( JetIDLevel_ == "Loose" && !jet->passesJetID  ( flashgg::Loose ) ) continue;
-                        if( JetIDLevel_ == "Tight" && !jet->passesJetID  ( flashgg::Tight ) ) continue;
-                        if( JetIDLevel_ == "Tight2017" && !jet->passesJetID  ( flashgg::Tight2017 ) ) continue;
-                        if( JetIDLevel_ == "Tight2018" && !jet->passesJetID  ( flashgg::Tight2018 ) ) continue;
-                    }
+                    /*
+                     if (btag<0) continue;//FIXME threshold might not be 0? For CMVA and DeepCSV it is 0.
 
-                    if( reco::deltaR( *jet, *(dipho->leadingPhoton()) ) < vetoConeSize_ || reco::deltaR( *jet, *(dipho->subLeadingPhoton()) ) < vetoConeSize_ ) {
-                    continue;
-                    }*/
-                        cleaned_jets.push_back( jet );
-                        cleaned_jets_btagScore.push_back(-1.0*btag);
-                   }
-                
+                     if( useJetID_ ) {
+                         if( JetIDLevel_ == "Loose" && !jet->passesJetID  ( flashgg::Loose ) ) continue;
+                         if( JetIDLevel_ == "Tight" && !jet->passesJetID  ( flashgg::Tight ) ) continue;
+                         if( JetIDLevel_ == "Tight2017" && !jet->passesJetID  ( flashgg::Tight2017 ) ) continue;
+                         if( JetIDLevel_ == "Tight2018" && !jet->passesJetID  ( flashgg::Tight2018 ) ) continue;
+                     }
+
+                     if( reco::deltaR( *jet, *(dipho->leadingPhoton()) ) < vetoConeSize_ || reco::deltaR( *jet, *(dipho->subLeadingPhoton()) ) < vetoConeSize_ ) {
+                     continue;
+                     }*/
+                    cleaned_jets.push_back( jet );
+                    cleaned_jets_btagScore.push_back(-1.0*btag);
+                }
+
                 // TODO : TODO : TODO : Need to mask this condition
                 int nGoodJets= cleaned_jets.size();
-//                std::cout<<"nGoodJets = "<<nGoodJets<<"\n";           
-                if( cleaned_jets.size() < 1 ) {  continue;}
+                //std::cout<<"\t\tnGoodJets = "<<nGoodJets<<"\n";
+                if( cleaned_jets.size() < 1 )
+                {
+                    continue;
+                }
 
-                if( int(cleaned_jets.size()) < minNGoodJets ) { continue; }
-                
+                if( int(cleaned_jets.size()) < minNGoodJets )
+                {
+                    continue;
+                }
+
 
                 //dijet selection. Do pair according to pt and choose the pair with highest b-tag
-                if (cleaned_jets.size() < 2) {
-                       cleaned_jets.push_back( cleaned_jets[0] );
-                       cleaned_jets_btagScore.push_back( -1.0 ) ;
+                if (cleaned_jets.size() < 2)
+                {
+                    cleaned_jets.push_back( cleaned_jets[0] );
+                    cleaned_jets_btagScore.push_back( -1.0 ) ;
                 }
 
-                if (cleaned_jets.size() < 3) {
-                       cleaned_jets.push_back( cleaned_jets[1] );
-                       cleaned_jets_btagScore.push_back( -1.0 ) ;
+                if (cleaned_jets.size() < 3)
+                {
+                    cleaned_jets.push_back( cleaned_jets[1] );
+                    cleaned_jets_btagScore.push_back( -1.0 ) ;
                 }
 
-                if (cleaned_jets.size() < 4) {
-                       cleaned_jets.push_back( cleaned_jets[2] );
-                       cleaned_jets_btagScore.push_back( -1.0 ) ;
+                if (cleaned_jets.size() < 4)
+                {
+                    cleaned_jets.push_back( cleaned_jets[2] );
+                    cleaned_jets_btagScore.push_back( -1.0 ) ;
                 }
 
                 auto sortedIndexByBJetScore = argsort(cleaned_jets_btagScore);
-                        
+
                 auto idx1=sortedIndexByBJetScore[0];
                 auto idx2=sortedIndexByBJetScore[1];
                 auto idx3=sortedIndexByBJetScore[2];
                 auto idx4=sortedIndexByBJetScore[3];
-                
+
                 // ------------  All HH pairing possibilities and getting dhh[i]-------------- //
-                
+
                 vector<float> dhh(3);
                 TLorentzVector m1P4[3],m2P4[3];
-                
+
                 auto lv1 = cleaned_jets[idx1]->p4()+cleaned_jets[idx2]->p4();
                 auto lv2 = cleaned_jets[idx3]->p4()+cleaned_jets[idx4]->p4();
-                if(lv1.Pt() > lv2.Pt() ){
+                if(lv1.Pt() > lv2.Pt() )
+                {
                     m1P4[0].SetPtEtaPhiE( lv1.Pt(), lv1.Eta(), lv1.Phi() , lv1.E() ) ;
                     m2P4[0].SetPtEtaPhiE( lv2.Pt(), lv2.Eta(), lv2.Phi() , lv2.E() ) ;
                 }
-                else {
+                else
+                {
                     m2P4[0].SetPtEtaPhiE( lv1.Pt(), lv1.Eta(), lv1.Phi() , lv1.E() ) ;
                     m1P4[0].SetPtEtaPhiE( lv2.Pt(), lv2.Eta(), lv2.Phi() , lv2.E() ) ;
                 }
@@ -564,11 +612,13 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
 
                 lv1 = cleaned_jets[idx1]->p4()+cleaned_jets[idx3]->p4();
                 lv2 = cleaned_jets[idx2]->p4()+cleaned_jets[idx4]->p4();
-                if(lv1.Pt() > lv2.Pt()) {
+                if(lv1.Pt() > lv2.Pt())
+                {
                     m1P4[1].SetPtEtaPhiE( lv1.Pt(), lv1.Eta(), lv1.Phi() , lv1.E() ) ;
                     m2P4[1].SetPtEtaPhiE( lv2.Pt(), lv2.Eta(), lv2.Phi() , lv2.E() ) ;
                 }
-                else {
+                else
+                {
                     m2P4[1].SetPtEtaPhiE( lv1.Pt(), lv1.Eta(), lv1.Phi() , lv1.E() ) ;
                     m1P4[1].SetPtEtaPhiE( lv2.Pt(), lv2.Eta(), lv2.Phi() , lv2.E() ) ;
                 }
@@ -577,45 +627,87 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
 
                 lv1 = cleaned_jets[idx1]->p4()+cleaned_jets[idx4]->p4();
                 lv2 = cleaned_jets[idx2]->p4()+cleaned_jets[idx3]->p4();
-                if(lv1.Pt() > lv2.Pt()) {
+                if(lv1.Pt() > lv2.Pt())
+                {
                     m1P4[2].SetPtEtaPhiE( lv1.Pt(), lv1.Eta(), lv1.Phi() , lv1.E() ) ;
                     m2P4[2].SetPtEtaPhiE( lv2.Pt(), lv2.Eta(), lv2.Phi() , lv2.E() ) ;
                 }
-                else {
+                else
+                {
                     m2P4[2].SetPtEtaPhiE( lv1.Pt(), lv1.Eta(), lv1.Phi() , lv1.E() ) ;
                     m1P4[2].SetPtEtaPhiE( lv2.Pt(), lv2.Eta(), lv2.Phi() , lv2.E() ) ;
                 }
                 dhh[2] = abs(m1P4[2].M() - a* m2P4[2].M())/b ;
-                
+
 
                 // -------------------------------------------------------------- //
                 auto sortedDhhIdx= argsort(dhh);
                 auto minDhhIdx=sortedDhhIdx[0];
                 auto nextMinDhhIdx=sortedDhhIdx[1];
-                
+
 
                 if( fabs(dhh[minDhhIdx] - dhh[nextMinDhhIdx] )< 30.0)
                 {
                     auto bVec=-1.0*(m1P4[minDhhIdx] + m2P4[minDhhIdx] ).BoostVector();
-                    m1P4[minDhhIdx].Boost( bVec);  m2P4[minDhhIdx].Boost( bVec);
-                    if(m1P4[minDhhIdx].Pt() < m2P4[minDhhIdx].Pt()) { auto& tmp= m1P4[minDhhIdx] ; m1P4[minDhhIdx] = m2P4[minDhhIdx] ; m2P4[minDhhIdx]=tmp;}
+                    m1P4[minDhhIdx].Boost( bVec);
+                    m2P4[minDhhIdx].Boost( bVec);
+                    if(m1P4[minDhhIdx].Pt() < m2P4[minDhhIdx].Pt())
+                    {
+                        auto& tmp= m1P4[minDhhIdx] ;
+                        m1P4[minDhhIdx] = m2P4[minDhhIdx] ;
+                        m2P4[minDhhIdx]=tmp;
+                    }
 
                     bVec=-1.0*(m1P4[nextMinDhhIdx] + m2P4[nextMinDhhIdx] ).BoostVector();
-                    m1P4[nextMinDhhIdx].Boost( bVec);  m2P4[nextMinDhhIdx].Boost( bVec);
-                    if(m1P4[nextMinDhhIdx].Pt() < m2P4[nextMinDhhIdx].Pt()) { auto& tmp= m1P4[nextMinDhhIdx] ; m1P4[nextMinDhhIdx] = m2P4[nextMinDhhIdx] ; m2P4[nextMinDhhIdx]=tmp;}
+                    m1P4[nextMinDhhIdx].Boost( bVec);
+                    m2P4[nextMinDhhIdx].Boost( bVec);
+                    if(m1P4[nextMinDhhIdx].Pt() < m2P4[nextMinDhhIdx].Pt())
+                    {
+                        auto& tmp= m1P4[nextMinDhhIdx] ;
+                        m1P4[nextMinDhhIdx] = m2P4[nextMinDhhIdx] ;
+                        m2P4[nextMinDhhIdx]=tmp;
+                    }
                     if(m1P4[nextMinDhhIdx].Pt() > m1P4[minDhhIdx].Pt())
                     {
-                        minDhhIdx=nextMinDhhIdx;    
+                        minDhhIdx=nextMinDhhIdx;
                     }
                 }
-                
+
                 edm::Ptr<flashgg::Jet>  jet1,jet2,jet3,jet4;
-                
-                if(minDhhIdx==0){ jet1=cleaned_jets[idx1] ; jet2=cleaned_jets[idx2] ; jet3=cleaned_jets[idx3] ; jet4=cleaned_jets[idx4] ; }
-                if(minDhhIdx==1){ jet1=cleaned_jets[idx1] ; jet2=cleaned_jets[idx3] ; jet3=cleaned_jets[idx2] ; jet4=cleaned_jets[idx4] ; }
-                if(minDhhIdx==2){ jet1=cleaned_jets[idx1] ; jet2=cleaned_jets[idx4] ; jet3=cleaned_jets[idx3] ; jet4=cleaned_jets[idx2] ; }
-                if(jet1->pt() < jet2->pt() ) { auto tmp = jet2 ; jet2 = jet1 ; jet1 = tmp  ; }
-                if(jet3->pt() < jet4->pt() ) { auto tmp = jet4 ; jet4 = jet3 ; jet3 = tmp  ; }
+
+                if(minDhhIdx==0)
+                {
+                    jet1=cleaned_jets[idx1] ;
+                    jet2=cleaned_jets[idx2] ;
+                    jet3=cleaned_jets[idx3] ;
+                    jet4=cleaned_jets[idx4] ;
+                }
+                if(minDhhIdx==1)
+                {
+                    jet1=cleaned_jets[idx1] ;
+                    jet2=cleaned_jets[idx3] ;
+                    jet3=cleaned_jets[idx2] ;
+                    jet4=cleaned_jets[idx4] ;
+                }
+                if(minDhhIdx==2)
+                {
+                    jet1=cleaned_jets[idx1] ;
+                    jet2=cleaned_jets[idx4] ;
+                    jet3=cleaned_jets[idx3] ;
+                    jet4=cleaned_jets[idx2] ;
+                }
+                if(jet1->pt() < jet2->pt() )
+                {
+                    auto tmp = jet2 ;
+                    jet2 = jet1 ;
+                    jet1 = tmp  ;
+                }
+                if(jet3->pt() < jet4->pt() )
+                {
+                    auto tmp = jet4 ;
+                    jet4 = jet3 ;
+                    jet3 = tmp  ;
+                }
 
                 // this MET is only for mass regresion ///////
                 edm::Handle<View<flashgg::Met> > RegMETs;
@@ -624,9 +716,10 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 auto & RegMET = MET;
                 // Sum of ET of all jets above 25 GeV and |eta| < 2.5
                 float sum_jetET = 0;
-                for( size_t ijet=0; ijet < cleaned_jets.size();++ijet){
-                     auto jet = cleaned_jets[ijet];
-                     sum_jetET += jet->p4().pt();
+                for( size_t ijet=0; ijet < cleaned_jets.size(); ++ijet)
+                {
+                    auto jet = cleaned_jets[ijet];
+                    sum_jetET += jet->p4().pt();
                 }
                 // X-Y correction of MET and MET phi
                 double METCorr=0., phiMETCorr=0.;
@@ -636,12 +729,12 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 int npv = vrtxs->size();
                 METCorr =     METXYCorr_Met_MetPhi(RegMET->pt(), RegMET->phi(),  evt.id().run(), "2017", !(evt.isRealData()),npv, true , false).first;
                 phiMETCorr =  METXYCorr_Met_MetPhi(RegMET->pt(), RegMET->phi(),  evt.id().run(), "2017", !(evt.isRealData()),npv, true , false).second;
-              
+
 
                 // prepare tag object
                 TrippleHTag tag_obj( dipho, jet1,jet2,jet3,jet4 , nGoodJets);
                 tag_obj.addAK4JetDetails(cleaned_jets);
-            //    std::cout<<doPromptGen<<" | "<<doHHHGen<<" | "<<evt.isRealData()<<"\n";
+                //    std::cout<<doPromptGen<<" | "<<doHHHGen<<" | "<<evt.isRealData()<<"\n";
                 if(  doPromptGen or doHHHGen  and ( ! evt.isRealData()) )
                 {
                     edm::Handle<edm::View<reco::GenParticle>> pruned;
@@ -675,10 +768,11 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 tag_obj.setGenCosThetaStar_CS( genCosThetaStar_CS );
                 if ( doReweight_ > 0 ) tag_obj.setBenchmarkReweight( reweight_values );
 
-                if(doSigmaMDecorr_) {
+                if(doSigmaMDecorr_)
+                {
                     tag_obj.setSigmaMDecorrTransf(transfEBEB_,transfNotEBEB_);
                 }
-                
+
                 /*
                 // eval MVA discriminant
                 std::vector<float> mva_vector = mvaComputer_(tag_obj);
@@ -695,7 +789,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 tag_obj.nMuons2018_ = Muons2018.size();
                 tag_obj.nElectrons2018_ = Electrons2018.size();
 
-                
+
                 // tth Tagger
                 if (dottHTagger_)
                 {
@@ -708,7 +802,8 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     njets = cleaned_jets.size();
                     std::vector<flashgg::Jet> cleanedDR_jets;
                     std::vector<flashgg::Jet> cleaned_physical_jets; // for Xtt calculation who doesn't take edm::Ptr
-                    for( size_t ijet=0; ijet < cleaned_jets.size(); ++ijet) {
+                    for( size_t ijet=0; ijet < cleaned_jets.size(); ++ijet)
+                    {
                         auto jet = cleaned_jets[ijet];
                         cleaned_physical_jets.push_back(*jet);
                         if( reco::deltaR(*jet, *jet1)< vetoConeSize_) continue;
@@ -737,10 +832,13 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     DiJet.push_back(tag_obj.h1LeadJet());
                     DiJet.push_back(tag_obj.h1SubleadJet());
                     std::vector<float> Xtt = tthKiller_.XttCalculation(cleaned_physical_jets,DiJet);
-                    if(Xtt.size()>3) {
+                    if(Xtt.size()>3)
+                    {
                         ttHVars["Xtt0"] = Xtt[0];
                         ttHVars["Xtt1"] = Xtt[3];
-                    } else {
+                    }
+                    else
+                    {
                         ttHVars["Xtt0"] = 1000;
                         ttHVars["Xtt1"] = 1000;
                     }
@@ -958,7 +1056,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                     HLF_VectorVar_.clear();
                 }
 
-                
+
 
                 // choose category and propagate weights
                 //int catnum = chooseCategory( tag_obj.MVA(), tag_obj.MX() );
@@ -974,19 +1072,21 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 tag_obj.includeWeightsByLabel( *jet2   , "JetBTagReshapeWeight" );
                 tag_obj.includeWeightsByLabel( *jet3   , "JetBTagReshapeWeight" );
                 tag_obj.includeWeightsByLabel( *jet4   , "JetBTagReshapeWeight" );
- 
+
 
                 //if (catnum>-1) {
-                    //if (doCategorization_) {
-                    //    if (tag_obj.dijet().mass()<mjjBoundariesLower_[catnum] || tag_obj.dijet().mass()>mjjBoundariesUpper_[catnum]) continue;
-                    //}
-                    tags->push_back( tag_obj );
-                    // link mc-truth
-                    if( ! evt.isRealData() ) {
-                        tags->back().setTagTruth( edm::refToPtr( edm::Ref<vector<TagTruthBase> >( rTagTruth, 0 ) ) );
-                    }
+                //if (doCategorization_) {
+                //    if (tag_obj.dijet().mass()<mjjBoundariesLower_[catnum] || tag_obj.dijet().mass()>mjjBoundariesUpper_[catnum]) continue;
+                //}
+                tags->push_back( tag_obj );
+                // link mc-truth
+                if( ! evt.isRealData() )
+                {
+                    tags->back().setTagTruth( edm::refToPtr( edm::Ref<vector<TagTruthBase> >( rTagTruth, 0 ) ) );
+                }
                 //}
             }
+            //std::cout<<"\t Got "<<tags->size()<<" tag objects ! \n";
             if (loopOverJets == 1)
                 evt.put( std::move( tags ),inputDiPhotonSuffixes_[diphoton_idx] );
             else
@@ -1015,10 +1115,10 @@ void TrippleHTagProducer::StandardizeHLF()
 void TrippleHTagProducer::StandardizeParticleList()
 {
     // Standardize pt, eta, phi of physics objects
-    for (unsigned int i = 0; i < 8; i++) // 8 objects
+    for (unsigned int i = 0; i < 8; i++)   // 8 objects
     {
         if (!isclose(PL_VectorVar_[i][0],0)) // only standardize object that exists (non-zero pt)
-            for (unsigned int j = 0; j < 3; j++) // pt, eta, phi for each objects
+            for (unsigned int j = 0; j < 3; j++)   // pt, eta, phi for each objects
             {
                 PL_VectorVar_[i][j] = (PL_VectorVar_[i][j] - list_mean_[j])/(list_std_[j]);
             }
@@ -1034,7 +1134,8 @@ float TrippleHTagProducer::EvaluateNN()
 
     tensorflow::Tensor HLFinput(tensorflow::DT_FLOAT, {1,shape});
     //std::cout << "Input high level feature: ";
-    for (unsigned int i = 0; i < shape; i++) {
+    for (unsigned int i = 0; i < shape; i++)
+    {
         HLFinput.matrix<float>()(0,i) =  float(HLF_VectorVar_[i]);
         //std::cout << HLF_VectorVar_[i] << "  ";
     }
@@ -1058,14 +1159,16 @@ float TrippleHTagProducer::EvaluateNN()
 }
 
 template<typename T>
-std::vector<size_t> argsort(const std::vector<T> &array) {
+std::vector<size_t> argsort(const std::vector<T> &array)
+{
     std::vector<size_t> indices(array.size());
     std::iota(indices.begin(), indices.end(), 0);
     std::sort(indices.begin(), indices.end(),
-              [&array](int left, int right) -> bool {
-                  // sort indices according to corresponding array element
-                  return array[left] < array[right];
-              });
+              [&array](int left, int right) -> bool
+    {
+        // sort indices according to corresponding array element
+        return array[left] < array[right];
+    });
 
     return indices;
 }
