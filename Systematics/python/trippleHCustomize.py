@@ -343,11 +343,17 @@ class TrippleHCustomize():
 
 
     def systematicVariables(self):
-      systematicVariables=minimalVariables  #["CMS_hgg_mass[160,100,180]:=diPhoton().mass","Mjj[120,70,190]:=dijet().M()","HHbbggMVA[100,0,1.]:=MVA()","MX[300,250,5000]:=MX()","eventNumber[40,0.,1000000.]:=eventNumber()","genMhh[300,250,5000]:=genMhh()","genAbsCosThetaStar_CS[100,0,1]:=abs(genCosThetaStar_CS())",'btagReshapeWeight[100,-10.,10]:=weight("JetBTagReshapeWeightCentral")',"ntagMuons[100,0.,10] := ntagMuons()","ntagElectrons[100,0.,10] := ntagElectrons()","nMuons2018[100,0.,10] := nMuons2018()","nElectrons2018[100,0.,10] := nElectrons2018()","leadingJet_pt[100,0,1000] := leadJet().pt","subleadingJet_pt[100,0,1000] := subleadJet().pt"]
+      systematicVariables_=minimalVariables  #["CMS_hgg_mass[160,100,180]:=diPhoton().mass","Mjj[120,70,190]:=dijet().M()","HHbbggMVA[100,0,1.]:=MVA()","MX[300,250,5000]:=MX()","eventNumber[40,0.,1000000.]:=eventNumber()","genMhh[300,250,5000]:=genMhh()","genAbsCosThetaStar_CS[100,0,1]:=abs(genCosThetaStar_CS())",'btagReshapeWeight[100,-10.,10]:=weight("JetBTagReshapeWeightCentral")',"ntagMuons[100,0.,10] := ntagMuons()","ntagElectrons[100,0.,10] := ntagElectrons()","nMuons2018[100,0.,10] := nMuons2018()","nElectrons2018[100,0.,10] := nElectrons2018()","leadingJet_pt[100,0,1000] := leadJet().pt","subleadingJet_pt[100,0,1000] := subleadJet().pt"]
       
       
-      systematicVariables += self.variablesToDump()
+      systematicVariables_ += self.variablesToDump()
+      systematicVariables = []
 
+      for var in systematicVariables_:
+        if var.startswith('gen'):
+            continue
+        systematicVariables.append(var)
+      
       return systematicVariables
 
 

@@ -154,17 +154,7 @@ void TrippleHTag::addGenObjectBranches()
       storageMapFloatArray["gen_"+tag+"_isFHPFS"]  = new Float_t ;
     }
     
-    for(TString tag : {
-                        "jet1","jet2","jet3","jet4","jet5","jet6","jet7","jet8","jet9","jet10","jet11","jet12"
-                      } )
-    {
-      storageMapFloatArray["gen_"+tag+"_pt"] = new Float_t;
-      storageMapFloatArray["gen_"+tag+"_y"] = new Float_t;
-      storageMapFloatArray["gen_"+tag+"_eta"] = new Float_t;
-      storageMapFloatArray["gen_"+tag+"_phi"] = new Float_t;
-      storageMapFloatArray["gen_"+tag+"_mass"] = new Float_t;
-    }
-
+    //   std::cout<<"Adding the GenJet Branches ! \n";
        storageMapFloatArray["genJet_isValid"]         = new Float_t[N_GEN_JET_MAX];
        storageMapFloatArray["genJet_pt"]         = new Float_t[N_GEN_JET_MAX];
        storageMapFloatArray["genJet_y"]        = new Float_t[N_GEN_JET_MAX];
@@ -224,7 +214,7 @@ void TrippleHTag::fillGenPrticle(TString tag, const reco::GenParticle &particle)
 float TrippleHTag::getGenDetails( std::string item_) const
 {
     TString item(item_.c_str());
-   // std::cout<<"Looking for "<<item<<"\n";
+    //std::cout<<"Looking for "<<item<<"\n";
     auto itm=storageMapFloatArray.find("gen_isValid") ;
     if( itm == storageMapFloatArray.end() )
     {
@@ -240,7 +230,7 @@ float TrippleHTag::getGenDetails( std::string item_) const
     {
         std::cout<<"Item asked not found getGenDetails || "<<item<<" || \n";
     }
-  //  std::cout<<" Found it ! ";
+    //std::cout<<" Found it ! ";
     return (itm->second[0]);
 }
 
@@ -248,6 +238,7 @@ void TrippleHTag::fillGenJets(const edm::Handle<edm::View<reco::GenJet>> genJets
 {    
     for( unsigned int i = 0 ; i < N_GEN_JET_MAX ; i++ ) 
     {
+      storageMapFloatArray["genJet_isValid"][i]   = 0.0  ;
       storageMapFloatArray["genJet_pt"][i]   = -1.0  ;
       storageMapFloatArray["genJet_eta"][i]  = -66.0 ;
       storageMapFloatArray["genJet_phi"][i]  = -66.0 ;
@@ -261,11 +252,21 @@ void TrippleHTag::fillGenJets(const edm::Handle<edm::View<reco::GenJet>> genJets
         if ( gjLoop  >= N_GEN_JET_MAX ) break;
         edm::Ptr<reco::GenJet> gj = genJets->ptrAt( gjLoop );
       
-        storageMapFloatArray["genJet_pt"][gjLoop]   =  gj->pt();
-        storageMapFloatArray["genJet_y"][gjLoop]    =  gj->y();
-        storageMapFloatArray["genJet_eta"][gjLoop]  =  gj->eta();
-        storageMapFloatArray["genJet_phi"][gjLoop]  =  gj->phi();
-        storageMapFloatArray["genJet_mass"][gjLoop] =  gj->mass();
+            storageMapFloatArray["genJet_isValid"][gjLoop]   =  1.0;
+            storageMapFloatArray["genJet_pt"][gjLoop]   =  gj->pt();
+            storageMapFloatArray["genJet_y"][gjLoop]    =  gj->y();
+            storageMapFloatArray["genJet_eta"][gjLoop]  =  gj->eta();
+            storageMapFloatArray["genJet_phi"][gjLoop]  =  gj->phi();
+            storageMapFloatArray["genJet_mass"][gjLoop] =  gj->mass();
+            
+            /*
+            std::cout<<" setting the genjet "<<gjLoop<<" | "
+                                             <<storageMapFloatArray["genJet_mass"][gjLoop] <<" , "
+                                             <<storageMapFloatArray["genJet_pt"][gjLoop] <<" , "
+                                             <<storageMapFloatArray["genJet_y"][gjLoop] <<" , "
+                                             <<storageMapFloatArray["genJet_eta"][gjLoop] <<" , "
+                                             <<storageMapFloatArray["genJet_phi"][gjLoop] <<" | \n" ;
+            */
         }
 
 }
@@ -488,7 +489,8 @@ float TrippleHTag::getAK4JetDetails(  std::string item_ ,  Int_t idx) const
 float TrippleHTag::getGenJDetails(  std::string item_ ,  Int_t idx) const
 {
     TString item(item_.c_str());
-    if(  idx >= N_JET_MAX  )
+ //   std::cout<<" looking for  "<<item<<" @"<<idx<<" \n";
+    if(  idx >= N_GEN_JET_MAX  )
     {
         return -1.111e3;       
     }
@@ -497,12 +499,15 @@ float TrippleHTag::getGenJDetails(  std::string item_ ,  Int_t idx) const
     {
         return -1.111e3;       
     }
+   // std::cout<<"\t"<<" genJet_isValid = "<<itm->second[idx]<<"\n";
     if( (itm->second)[idx]< 0.0 )
     {
         return -1.111e3;       
     }
 
     itm=storageMapFloatArray.find(item) ;
+  //  std::cout<<"\tFound it ! got as "<< (itm->second)[idx];
+
     return (itm->second)[idx];
 }
 

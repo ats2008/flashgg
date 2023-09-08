@@ -735,7 +735,7 @@ void TrippleHTagProducer::produce( Event &evt, const EventSetup & )
                 TrippleHTag tag_obj( dipho, jet1,jet2,jet3,jet4 , nGoodJets);
                 tag_obj.addAK4JetDetails(cleaned_jets);
                 //    std::cout<<doPromptGen<<" | "<<doHHHGen<<" | "<<evt.isRealData()<<"\n";
-                if(  doPromptGen or doHHHGen  and ( ! evt.isRealData()) )
+                if(  ( doPromptGen or doHHHGen or doGenJets )  and ( ! evt.isRealData()) )
                 {
                     edm::Handle<edm::View<reco::GenParticle>> pruned;
                     evt.getByToken(genParticleToken_, pruned);
