@@ -48,13 +48,12 @@ customize.options.register('minNGoodJets',
                            VarParsing.VarParsing.varType.int,
                            'minNGoodJets'
                            )
-customize.options.register(
-                             'njetMax',
-                             8,
-                             VarParsing.VarParsing.multiplicity.singleton,
-                             VarParsing.VarParsing.varType.int,
-                             'njetMax'
-                          )
+customize.options.register('njetMax',
+                           16,
+                           VarParsing.VarParsing.multiplicity.singleton,
+                           VarParsing.VarParsing.varType.int,
+                           'njetMax'
+                           )
 customize.options.register('doPromptGen',
                            False,
                            VarParsing.VarParsing.multiplicity.singleton,
