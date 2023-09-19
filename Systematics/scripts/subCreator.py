@@ -37,6 +37,7 @@ def main():
     
     parser.add_argument('-i',"--inputFolder", help="Input direcotory path")
     parser.add_argument('-n',"--nMax", help="max job count",default=-1,type=int)
+    parser.add_argument('-s',"--cstr", help="check string",default=None)
     args = parser.parse_args()
     #sstr=args.inputFolder+"*.root"
     sstr=args.inputFolder.replace("@@","*")
@@ -56,6 +57,10 @@ def main():
         for fname in flist:
             fname=fname.split('/')[-1]
             process='_'.join(fname.replace('output_','').split("_")[:-1])+'.root'
+            if args.cstr:
+                if args.cstr not in process:
+                    continue
+
             outId=int(fname.split("_")[-1].replace('.root',''))
             if process not in procDict:
                 procDict[process]=[]
