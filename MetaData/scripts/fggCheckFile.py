@@ -17,9 +17,12 @@ def main(args):
         prepend = ["root://cms-xrd-global.cern.ch/", "root://eoscms.cern.ch//eos/cms"]
     else:
         prepend = [""]
-        
     for pp in prepend:
-        fin = ROOT.TFile.Open("%s/%s" % (pp, fName))
+        
+        fnme=pp+'/'+fName
+        if pp=='':
+            fnme=fName
+        fin = ROOT.TFile.Open(fnme)
         if fin and not fin.IsZombie():
             break
     if not fin or fin.IsZombie():

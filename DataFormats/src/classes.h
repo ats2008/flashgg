@@ -50,6 +50,7 @@
 #include "flashgg/DataFormats/interface/ZPlusJetTag.h"
 #include "flashgg/DataFormats/interface/TagCandidate.h"
 #include "flashgg/DataFormats/interface/TagAndProbeCandidate.h" //spigazzi
+#include "flashgg/DataFormats/interface/TrippleHTag.h"
 #include "flashgg/DataFormats/interface/DoubleHTag.h"
 #include "flashgg/DataFormats/interface/VBFDoubleHTag.h"
 #include <vector>
@@ -237,9 +238,14 @@ namespace  {
         std::vector<flashgg::THQLeptonicTagTruth> vec_thqlt;
         edm::Wrapper<std::vector<flashgg::THQLeptonicTagTruth> > wrp_vec_thqlt;
 
+        flashgg::TrippleHTag hhh;
+        std::vector<flashgg::TrippleHTag> vec_hhh;
+        edm::Wrapper<std::vector<flashgg::TrippleHTag> > wrp_vec_hhh;
+        
         flashgg::DoubleHTag hh;
         std::vector<flashgg::DoubleHTag> vec_hh;
         edm::Wrapper<std::vector<flashgg::DoubleHTag> > wrp_vec_hh;
+        
         //VBF Tag
         flashgg::VBFDoubleHTag vbfhh;
         std::vector<flashgg::VBFDoubleHTag> vec_vbfhh;

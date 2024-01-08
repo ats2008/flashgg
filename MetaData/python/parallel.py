@@ -23,6 +23,7 @@ class BatchRegistry:
     autoprint  = True
     domains_map = {
         "cern.ch"          : "htcondor",
+        "indiacms.res.in"          : "htcondor",
         "psi.ch"           : "sge",
         "hep.ph.ic.ac.uk"  : "sge",
         "irfu.ext"         : "iclust",

@@ -2,8 +2,7 @@
     "/W2JetsToLNu_LHEWpT_150-250_TuneCP5_13TeV-amcnloFXFX-pythia8/alesauva-2017_1-10_6_4-v0-RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1-c79bbfc289cbd2889324309d1f5db9cf/USER": {
         "dset_type": "mc", 
         "files": [
-
-  {
+            {
                 "bad": false, 
                 "events": 42389, 
                 "name": "/store/user/alesauva/flashgg/2017_1/10_6_4/W2JetsToLNu_LHEWpT_150-250_TuneCP5_13TeV-amcnloFXFX-pythia8/2017_1-10_6_4-v0-RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/210803_204530/0000/myMicroAODOutputFile_1.root", 

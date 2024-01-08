@@ -352,3 +352,11 @@ After that, the status of the submission can be checked with the `--summary` com
 
 To resume the task monitoring with 
 `fggRunJobs.py --load <task_folder>/config.json --cont`.
+
+
+## Making Custom dataset.json files from text files with filepaths
+
+```
+python scripts/catalogueFromTxt.py /<sample name>/<campaign tag>/USER <file list >
+# python scripts/catalogueFromTxt.py /aSample/UL18/USER ff.fls
+```
