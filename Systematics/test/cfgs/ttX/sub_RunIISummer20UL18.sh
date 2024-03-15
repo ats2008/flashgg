@@ -9,7 +9,7 @@ fggRunJobs.py \
     -d RunIISummer20UL18_${version}_${tag}  \
     workspaceHHH_MC.py \
     maxEvents=-1  \
-    -n 400 \
+    -n 2000 \
     -q workday \
     --no-use-tarball \
 	--no-copy-proxy \
