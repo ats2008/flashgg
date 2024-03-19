@@ -1,5 +1,18 @@
 {
-    "/HHHTo4B2G_c3_0_d4_0_TuneCP5_13TeV-amcatnlo-pythia8"      : { "xs" : 0.001, "kf" : 1.0                              },
+    "HHHTo4B2G_c3_0_d4_0_TuneCP5_13TeV-amcatnlo-pythia8"      :         { "xs" : 0.001, "kf" : 1.0                              },
+    "HHHTo4B2G_c3_0_d4_99_TuneCP5_13TeV-amcatnlo-pythia8" :             { "xs" : 0.001, "kf" : 1.0                              } , 
+    "HHHTo4B2G_c3_0_d4_minus1_TuneCP5_13TeV-amcatnlo-pythia8" :         { "xs" : 0.001, "kf" : 1.0                              } , 
+    "HHHTo4B2G_c3_19_d4_19_TuneCP5_13TeV-amcatnlo-pythia8" :            { "xs" : 0.001, "kf" : 1.0                              } , 
+    "HHHTo4B2G_c3_1_d4_0_TuneCP5_13TeV-amcatnlo-pythia8" :              { "xs" : 0.001, "kf" : 1.0                              } , 
+    "HHHTo4B2G_c3_1_d4_2_TuneCP5_13TeV-amcatnlo-pythia8" :              { "xs" : 0.001, "kf" : 1.0                              } , 
+    "HHHTo4B2G_c3_2_d4_minus1_TuneCP5_13TeV-amcatnlo-pythia8" :         { "xs" : 0.001, "kf" : 1.0                              } , 
+    "HHHTo4B2G_c3_4_d4_9_TuneCP5_13TeV-amcatnlo-pythia8" :              { "xs" : 0.001, "kf" : 1.0                              } , 
+    "HHHTo4B2G_c3_minus1_d4_0_TuneCP5_13TeV-amcatnlo-pythia8" :         { "xs" : 0.001, "kf" : 1.0                              } , 
+    "HHHTo4B2G_c3_minus1_d4_minus1_TuneCP5_13TeV-amcatnlo-pythia8" :    { "xs" : 0.001, "kf" : 1.0                              } , 
+    "HHHTo4B2G_c3_minus1p5_d4_minus0p5_TuneCP5_13TeV-amcatnlo-pythia8" :{ "xs" : 0.001, "kf" : 1.0                              } , 
+
+
+
     "GluGluToBulkGravitonToHHTo2B2G_M-1000_narrow_13TeV-madgraph"     : { "xs" : 0.00, "kf" : 1.06                               },
     "GluGluToBulkGravitonToHHTo2B2G_M-250_narrow_13TeV-madgraph"      : { "xs" : 0.001, "kf" : 1.06                              },
     "GluGluToBulkGravitonToHHTo2B2G_M-260_narrow_13TeV-madgraph"      : { "xs" : 0.001, "kf" : 1.06                              },
@@ -440,5 +453,24 @@
     "ZZ_TuneCUETP8M1_13TeV-pythia8"                                        : { "xs" : 10.16  },
     "WW_TuneCP5_13TeV-pythia8"                                             : { "xs" : 75.8   },
     "WZ_TuneCP5_13TeV-pythia8"                                             : { "xs" : 27.6   },
-    "ZZ_TuneCP5_13TeV-pythia8"                                             : { "xs" : 12.14  }
+    "ZZ_TuneCP5_13TeV-pythia8"                                             : { "xs" : 12.14  },
+
+"/TTHHToGGBB_TuneCP5_13TeV_2016Post"   : { "xs" : 0.001   , "kf" : 1.0 },
+"/TTHHToGGBB_TuneCP5_13TeV_2016Pre"  : { "xs" : 0.001   , "kf" : 1.0 },
+"/TTHHToGGBB_TuneCP5_13TeV_2017" : { "xs" : 0.001   , "kf" : 1.0 },
+"/TTHHToGGBB_TuneCP5_13TeV_2018" : { "xs" : 0.001   , "kf" : 1.0 },
+"/mg52016Post_bbH_yt2" : { "xs" : 0.4822 ,   "br" : 0.00227, "kf" : 1.06 },
+"/mg52016Pre_bbH_yt2": { "xs" : 0.4822 ,   "br" : 0.00227, "kf" : 1.06 },
+"/mg52017_bbH_yt2": { "xs" : 0.4822 ,   "br" : 0.00227, "kf" : 1.06 },
+"/mg52018_bbH_yt2": { "xs" : 0.4822 ,   "br" : 0.00227, "kf" : 1.06 },
+"/powheg2016Pre_bbgg_kl_1p0" : { "xs" : 0.001   , "kf" : 1.06 },
+"/powheg2017_bbgg_kl_1p0" : { "xs" : 0.001   , "kf" : 1.06 } ,
+"/powheg2018_bbgg_kl_0p00" : { "xs" : 0.001   , "kf" : 1.06 },
+"/powheg2018_bbgg_kl_1p0" : { "xs" : 0.001   , "kf" : 1.06 },
+"/powheg2018_bbgg_kl_2p45" : { "xs" : 0.001   , "kf" : 1.06 },
+"/powheg2018_bbgg_kl_5p00" : { "xs" : 0.001   , "kf" : 1.06 }
+
+
+
 }
+
